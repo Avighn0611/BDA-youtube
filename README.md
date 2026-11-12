@@ -4,6 +4,8 @@ YouTube Pulse is a batch analytics system for historical YouTube trending data. 
 
 The system analyzes views, likes, comments, and engagement across videos, categories, and observation dates. Its processing pipeline covers data acquisition, ingestion, validation, deduplication, aggregation, and presentation. Processed datasets and execution records are retained to support reproducibility and evaluation.
 
+Deployment: one physical Mac, one logical master, and two logical workers.
+
 ## 1. Introduction and objectives
 
 Trending-video datasets contain repeated observations of videos across multiple dates. View, like, and comment counters are cumulative, while category labels require a separate lookup. Analysis must therefore distinguish historical observations from unique videos to avoid duplicate counting and incorrect aggregation.
@@ -245,7 +247,7 @@ The master allocates executor resources; the application driver schedules indivi
 
 The configured core count governs Spark task concurrency rather than reserving exclusive physical CPU cores. Java heap settings also exclude Python processes and other native memory overhead. Total host memory consumption includes Hadoop services, the driver, executors, the dashboard, and the operating system.
 
-This is a single-host cluster with two logical workers, not a verified three-PC deployment. Meeting the course's physical-machine requirement needs either a deployment on three PCs or instructor acceptance of this alternative. The [multi-machine guide](docs/MULTI_MACHINE.md) explains the required address, port, runtime, and deployment changes.
+The current deployment uses one physical host with two logical workers. The [multi-machine guide](docs/MULTI_MACHINE.md) explains the address, port, runtime, and deployment changes required to distribute these services across separate computers.
 
 The dataset is small enough to process on a single computer. The implementation demonstrates distributed storage and execution mechanisms; it does not establish a performance advantage over single-process analysis at this scale.
 
@@ -300,7 +302,7 @@ To stop the services and free memory while keeping the data:
 .venv/bin/python scripts/cluster.py stop
 ```
 
-Run one pipeline at a time. Close memory-heavy applications during a demonstration on an 8 GB machine.
+Run one pipeline at a time.
 
 ### 9.2 Initial installation on macOS
 
@@ -342,7 +344,7 @@ Runtimes live in `~/.cache/youtube-pulse`; `.runtime` and `.venv` are local syml
 .venv/bin/python scripts/collect_evidence.py
 ```
 
-`artifacts/pipeline.log` contains the analysis log; `.runtime/state/logs/` contains service logs. Spark event logs are retained in HDFS under `/youtube/events`. Startup preserves an existing filesystem rather than formatting it again.
+`artifacts/pipeline.log` contains the analysis log; `.runtime/state/logs/` contains service logs. Spark event logs are retained in HDFS under `/youtube/events`. Startup preserves an existing filesystem rather than formatting it again. Processing time depends on available memory and system load.
 
 ## 10. Repository structure and supporting documentation
 
