@@ -142,14 +142,17 @@ Spark tests cover duplicate snapshots, latest-observation totals, invalid data, 
 
 ## GitHub submission
 
-Commit source, docs, and selected evidence screenshots. Do not commit runtimes, virtual environments, the full downloaded dataset, or secrets. Create an empty GitHub repository, then publish this repository:
+Project repository: **[Avighn0611/BDA-youtube](https://github.com/Avighn0611/BDA-youtube)**.
+
+Source, documentation, the dashboard screenshot, and a verification summary are included. Runtimes, virtual environments, the full downloaded dataset, and secrets are excluded. After making further changes locally, commit and push them:
 
 ```bash
-git remote add origin https://github.com/YOUR_USERNAME/youtube-pulse.git
-git push -u origin main
+git add .
+git commit -m "Describe your changes"
+git push
 ```
 
-Replace the example URL with your actual repository URL. Use a repository your evaluator can access. Include team names and actual contributions before submission. A repository URL is only a submission link after the push succeeds.
+Share the repository URL with your evaluator and ensure they have access. Include team names and actual contributions before submission.
 
 ## References
 
