@@ -6,6 +6,8 @@ The system analyzes views, likes, comments, and engagement across videos, catego
 
 Deployment: one physical Mac, one logical master, and two logical workers.
 
+The [project report](PROJECT_REPORT.md) presents the methodology, architecture, analytical results, and validation for evaluation.
+
 ## 1. Introduction and objectives
 
 Trending-video datasets contain repeated observations of videos across multiple dates. View, like, and comment counters are cumulative, while category labels require a separate lookup. Analysis must therefore distinguish historical observations from unique videos to avoid duplicate counting and incorrect aggregation.
