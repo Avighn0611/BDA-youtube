@@ -1,0 +1,37 @@
+{
+  "application_id": "app-20261112121917-0000",
+  "event_log": "hdfs://127.0.0.1:9000/youtube/events/app-20261112121917-0000",
+  "executors": {
+    "1": {
+      "Host": "127.0.0.1",
+      "Total Cores": 1,
+      "Log Urls": {
+        "stdout": "http://127.0.0.1:8082/logPage/?appId=app-20261112121917-0000&executorId=1&logType=stdout",
+        "stderr": "http://127.0.0.1:8082/logPage/?appId=app-20261112121917-0000&executorId=1&logType=stderr"
+      },
+      "Attributes": {},
+      "Resources": {},
+      "Resource Profile Id": 0,
+      "Registration Time": 1794466159374
+    },
+    "0": {
+      "Host": "127.0.0.1",
+      "Total Cores": 1,
+      "Log Urls": {
+        "stdout": "http://127.0.0.1:8081/logPage/?appId=app-20261112121917-0000&executorId=0&logType=stdout",
+        "stderr": "http://127.0.0.1:8081/logPage/?appId=app-20261112121917-0000&executorId=0&logType=stderr"
+      },
+      "Attributes": {},
+      "Resources": {},
+      "Resource Profile Id": 0,
+      "Registration Time": 1794466159454
+    }
+  },
+  "completed_tasks_per_executor": {
+    "0": 29,
+    "1": 31
+  },
+  "failed_tasks_per_executor": {},
+  "two_executors_completed_tasks": true,
+  "physical_hosts": 1
+}

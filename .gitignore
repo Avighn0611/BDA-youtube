@@ -1,0 +1,11 @@
+.venv
+.runtime
+__pycache__/
+.pytest_cache/
+.DS_Store
+data/raw/*
+!data/raw/.gitkeep
+artifacts/*
+!artifacts/.gitkeep
+*.log
+.env
