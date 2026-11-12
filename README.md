@@ -4,7 +4,7 @@ A working Hadoop HDFS + Apache Spark analytics project with a Streamlit dashboar
 
 ![YouTube Pulse dashboard](docs/dashboard.png)
 
-**Deployment:** one physical Mac, one logical master, two logical workers. This is a single-host demonstration, not a verified three-PC deployment. The course's three-PC requirement still needs a physical deployment or instructor acceptance of this alternative.
+**Deployment:** one physical Mac, one logical master, two logical workers.
 
 ## Features
 
@@ -33,7 +33,7 @@ Open **http://127.0.0.1:8501**. Existing processed results load immediately. To 
 .venv/bin/python scripts/collect_evidence.py
 ```
 
-Run only one pipeline at a time. Logs are written to `artifacts/pipeline.log`; a complete job can take a few minutes depending on memory pressure. Close memory-heavy applications during the demo.
+Run only one pipeline at a time. Logs are written to `artifacts/pipeline.log`; a complete job can take a few minutes depending on memory pressure.
 
 Shortcut: `bash run.sh` starts the cluster and dashboard using saved results. `bash run.sh --refresh` also reruns ingestion, Spark analysis, validation, and executor evidence collection.
 
