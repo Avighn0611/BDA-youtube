@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YouTube Pulse - Distributed Batch Analytics Presentation</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="deck-viewport">
+    <main class="slide-stage" id="slideStage">
+
+      <!-- ===================================================================
+           SLIDE 1: TITLE, PURPOSE & VERIFIED KPI OVERVIEW
+           =================================================================== -->
+      <section class="slide slide-hero active" data-title="YouTube Pulse - Overview">
+        <div class="slide-body" style="justify-content: space-between; gap: 26px;">
+          <div class="eyebrow">
+            <span class="eyebrow-dot"></span>
+            BIG DATA ANALYTICS PROJECT | GITHUB.COM/AVIGHN0611/BDA-YOUTUBE
+          </div>
+
+          <div class="grid-55-45" style="align-items: center; gap: 38px; flex: 1;">
+            <div class="flex-col" style="gap: 24px;">
+              <h1 class="hero-title">
+                <span class="hero-gradient">YouTube Pulse</span><br />
+                Distributed Batch Analytics
+              </h1>
+
+              <p class="lead">
+                Stores historical YouTube trending records in <strong>Hadoop HDFS</strong>,
+                processes them in <strong>Apache Spark</strong>, and explores results in
+                <strong>Streamlit</strong>.
+              </p>
+
+              <div class="card card-soft-blue" style="padding: 22px 26px; gap: 10px;">
+                <h4>Core Problem Solved</h4>
+                <p>
+                  Trending videos repeat across multiple dates with <strong>cumulative</strong> view counts.
+                  YouTube Pulse separates daily snapshots from each video's latest record so totals never double-count.
+                </p>
+              </div>
+
+              <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                <span class="pill pill-purple">Hadoop HDFS 3.3.6</span>
+                <span class="pill pill-blue">Apache Spark 3.5.7</span>
+                <span class="pill pill-cyan">Streamlit 1.50 | Plotly 6.3</span>
+              </div>
+            </div>
+
+            <div class="diagram-frame" style="padding: 24px; box-shadow: var(--shadow-lg);">
+              <svg viewBox="0 0 760 510" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <marker id="a1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+                    <path d="M 0 1 L 10 5 L 0 9 z" fill="#2563eb" />
+                  </marker>
+                </defs>
+                <rect x="16" y="12" width="728" height="126" rx="18" fill="#f5f3ff" stroke="#7c3aed" stroke-width="3" />
+                <text x="44" y="56" font-size="27" font-weight="900" fill="#5b21b6">1. Storage: Hadoop HDFS 3.3.6</text>
+                <text x="44" y="92" font-size="22" font-weight="600" fill="#334155">1 NameNode + 2 DataNodes (Replication = 2)</text>
+                <text x="44" y="122" font-size="20" font-family="monospace" fill="#6d28d9">hdfs://127.0.0.1:9000/youtube/</text>
+
+                <line x1="380" y1="138" x2="380" y2="188" stroke="#2563eb" stroke-width="4" marker-end="url(#a1)" />
+                <text x="400" y="172" font-size="20" font-weight="800" fill="#1e3a8a">Replicated CSV + JSON</text>
+
+                <rect x="16" y="194" width="728" height="126" rx="18" fill="#eff6ff" stroke="#2563eb" stroke-width="3" />
+                <text x="44" y="238" font-size="27" font-weight="900" fill="#1e3a8a">2. Compute: Apache Spark 3.5.7</text>
+                <text x="44" y="274" font-size="22" font-weight="600" fill="#334155">Standalone Master + 2 Workers (29 + 31 tasks)</text>
+                <text x="44" y="304" font-size="20" font-family="monospace" fill="#1d4ed8">Validate -> Dedup -> Broadcast Join -> Parquet</text>
+
+                <line x1="380" y1="320" x2="380" y2="370" stroke="#2563eb" stroke-width="4" marker-end="url(#a1)" />
+                <text x="400" y="354" font-size="20" font-weight="800" fill="#1e3a8a">JSONL Artifacts + Proofs</text>
+
+                <rect x="16" y="376" width="728" height="122" rx="18" fill="#ecfeff" stroke="#0891b2" stroke-width="3" />
+                <text x="44" y="420" font-size="27" font-weight="900" fill="#155e75">3. Analytics UI: Streamlit and Plotly</text>
+                <text x="44" y="456" font-size="22" font-weight="600" fill="#334155">4-Tab Read-Only Dashboard + Independent Audit</text>
+                <text x="44" y="484" font-size="20" font-family="monospace" fill="#0e7490">http://127.0.0.1:8501 | Verified 12 Nov 2026</text>
+              </svg>
+            </div>
+          </div>
+
+          <div class="grid-4">
+            <div class="kpi-tile card-accent-navy">
+              <span class="kpi-label">Raw Input Rows</span>
+              <span class="kpi-value text-navy">37,352</span>
+              <span class="kpi-sub">India Kaggle CSV</span>
+            </div>
+            <div class="kpi-tile card-accent-purple">
+              <span class="kpi-label">Valid Snapshots</span>
+              <span class="kpi-value text-purple">32,265</span>
+              <span class="kpi-sub">5,087 invalid/dupes removed</span>
+            </div>
+            <div class="kpi-tile card-accent-blue">
+              <span class="kpi-label">Unique Videos</span>
+              <span class="kpi-value text-blue">16,305</span>
+              <span class="kpi-sub">1 latest row per video</span>
+            </div>
+            <div class="kpi-tile card-accent-cyan">
+              <span class="kpi-label">Latest Views</span>
+              <span class="kpi-value text-cyan">11.14B</span>
+              <span class="kpi-sub">0.86% median engagement</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-corner-num">
+          <div class="progress-track"><div class="progress-fill"></div></div>
+          <span class="slide-num">01 / 13</span>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           SLIDE 2: THE DATA PROBLEM - CUMULATIVE COUNTERS & QUALITY
+           =================================================================== -->
+      <section class="slide" data-title="The Data Problem">
+        <header class="slide-header">
+          <div class="eyebrow"><span class="eyebrow-dot"></span>02 | PROBLEM CONTEXT</div>
+          <h2 class="slide-title">Why Trending Video Data Breaks Naive Analytics</h2>
+        </header>
+
+        <div class="slide-body grid-2" style="gap: 28px;">
+          <!-- Left: 4 Full, Balanced Challenge Cards with Concrete Evidence -->
+          <div class="flex-col" style="gap: 16px;">
+            <div class="card card-accent-navy grow" style="padding: 18px 24px; justify-content: center; gap: 8px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h4>1. Repeated Daily Observations</h4>
+                <span class="pill pill-navy">32,265 -> 16,305</span>
+              </div>
+              <p style="font-size: 23px;">
+                One video trends across multiple dates. Each row carries its <strong>cumulative</strong>
+                worldwide views, likes, and comments up to that observation day.
+              </p>
+            </div>
+
+            <div class="card card-accent-purple grow" style="padding: 18px 24px; justify-content: center; gap: 8px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h4>2. Malformed Rows &amp; Multiline Text</h4>
+                <span class="pill pill-purple">5,087 Removed</span>
+              </div>
+              <p style="font-size: 23px;">
+                Source CSV files include multiline descriptions, corrupted IDs like <code>#NAME?</code>,
+                bad dates, and missing or negative counters that break strict parsing.
+              </p>
+            </div>
+
+            <div class="card card-accent-blue grow" style="padding: 18px 24px; justify-content: center; gap: 8px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h4>3. Unjoined Category Identifiers</h4>
+                <span class="pill pill-blue">69 Unmatched</span>
+              </div>
+              <p style="font-size: 23px;">
+                The CSV stores numeric <code>category_id</code> codes. Human-readable names live in
+                <code>IN_category_id.json</code>; missing IDs map safely to <code>Unknown</code>.
+              </p>
+            </div>
+
+            <div class="card card-accent-cyan grow" style="padding: 18px 24px; justify-content: center; gap: 8px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h4>4. Disabled Ratings &amp; Zero Views</h4>
+                <span class="pill pill-cyan">NULL Safe Ratio</span>
+              </div>
+              <p style="font-size: 23px;">
+                Zero-view or ratings-disabled videos must return <code>NULL</code> engagement instead
+                of dividing by zero or biasing category averages downward.
+              </p>
+            </div>
+          </div>
+
+          <!-- Right: Worked Example + Domain Definitions + Scope -->
+          <div class="flex-col" style="gap: 18px;">
+            <div class="card card-accent-blue grow" style="padding: 20px 24px; justify-content: center; gap: 16px;">
+              <h3>Worked Example: Double-Counting Trap</h3>
+              <svg viewBox="0 0 820 400" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <marker id="a2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+                    <path d="M 0 1 L 10 5 L 0 9 z" fill="#1e3a8a" />
+                  </marker>
+                </defs>
+                <rect x="10" y="8" width="385" height="114" rx="16" fill="#eff6ff" stroke="#2563eb" stroke-width="2.5" />
+                <text x="34" y="46" font-size="23" font-weight="800" fill="#1e3a8a">Day 1: 14 Nov 2017</text>
+                <text x="34" y="78" font-size="22" font-weight="600" fill="#334155">Video A: 1,000 views</text>
+                <text x="34" y="106" font-size="19" fill="#2563eb">Kept in daily snapshots</text>
+
+                <rect x="424" y="8" width="385" height="114" rx="16" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2.5" />
+                <text x="448" y="46" font-size="23" font-weight="800" fill="#5b21b6">Day 2: 15 Nov 2017</text>
+                <text x="448" y="78" font-size="22" font-weight="600" fill="#334155">Video A: 1,500 views</text>
+                <text x="448" y="106" font-size="19" fill="#7c3aed">Kept in snapshots + latest</text>
+
+                <line x1="202" y1="122" x2="202" y2="192" stroke="#64748b" stroke-width="3.5" stroke-dasharray="8 6" marker-end="url(#a2)" />
+                <line x1="616" y1="122" x2="616" y2="192" stroke="#1e3a8a" stroke-width="4" marker-end="url(#a2)" />
+
+                <rect x="10" y="200" width="385" height="190" rx="18" fill="#f1f5f9" stroke="#64748b" stroke-width="3" stroke-dasharray="8 6" />
+                <text x="36" y="242" font-size="21" font-weight="900" fill="#475569">NAIVE SUM (INCORRECT)</text>
+                <text x="36" y="306" font-size="50" font-weight="900" fill="#334155">2,500 views</text>
+                <text x="36" y="346" font-size="21" fill="#475569">Counts Day 1 views twice.</text>
+                <text x="36" y="374" font-size="20" fill="#64748b">Inflates all category totals.</text>
+
+                <rect x="424" y="200" width="385" height="190" rx="18" fill="#0f172a" stroke="#06b6d4" stroke-width="3.5" />
+                <text x="450" y="242" font-size="21" font-weight="900" fill="#67e8f9">LATEST SNAPSHOT (CORRECT)</text>
+                <text x="450" y="306" font-size="50" font-weight="900" fill="#ffffff">1,500 views</text>
+                <text x="450" y="346" font-size="21" fill="#e2e8f0">1 latest row per video.</text>
+                <text x="450" y="374" font-size="20" fill="#67e8f9">Exact match to source data.</text>
+              </svg>
+            </div>
+
+            <div class="card card-soft-cyan" style="padding: 18px 24px; gap: 10px;">
+              <h4>Project Scope &amp; Dataset Coverage</h4>
+              <p style="font-size: 22px;">
+                <strong>Dataset:</strong> Public Kaggle archive (<code>datasnaek/youtube-new</code>, Nov 2017 - Jun 2018).<br />
+                <strong>Scope:</strong> Historical batch analytics only. Live YouTube API, streaming, and ML prediction are out of scope.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-corner-num">
+          <div class="progress-track"><div class="progress-fill"></div></div>
+          <span class="slide-num">02 / 13</span>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           SLIDE 3: TECHNOLOGY STACK & ARCHITECTURAL ROLES
+           =================================================================== -->
+      <section class="slide" data-title="Technology Stack & Roles">
+        <header class="slide-header">
+          <div class="eyebrow"><span class="eyebrow-dot"></span>03 | TECHNOLOGY STACK</div>
+          <h2 class="slide-title">Verified Software Stack &amp; Clear Layer Separation</h2>
+        </header>
+
+        <div class="slide-body grid-40-60" style="gap: 30px;">
+          <!-- Left: Layered Stack SVG -->
+          <div class="diagram-frame" style="padding: 22px;">
+            <svg viewBox="0 0 640 770" xmlns="http://www.w3.org/2000/svg">
+              <rect x="14" y="12" width="612" height="154" rx="20" fill="#ecfeff" stroke="#0891b2" stroke-width="3" />
+              <text x="42" y="58" font-size="25" font-weight="900" fill="#155e75">LAYER 4: VISUALIZATION &amp; UI</text>
+              <text x="42" y="98" font-size="28" font-weight="800" fill="#0f172a">Streamlit 1.50.0 + Plotly 6.3.1</text>
+              <text x="42" y="138" font-size="21" fill="#334155">4-tab browser dashboard (:8501) + CSV export</text>
+
+              <rect x="14" y="198" width="612" height="154" rx="20" fill="#eff6ff" stroke="#3b82f6" stroke-width="3" />
+              <text x="42" y="244" font-size="25" font-weight="900" fill="#1d4ed8">LAYER 3: ORCHESTRATION &amp; AUDIT</text>
+              <text x="42" y="284" font-size="28" font-weight="800" fill="#0f172a">Python 3.11 + pandas 2.3.3</text>
+              <text x="42" y="324" font-size="21" fill="#334155">Cluster scripts, requests 2.32.5, pytest 8.4.2</text>
+
+              <rect x="14" y="384" width="612" height="154" rx="20" fill="#dbeafe" stroke="#1e3a8a" stroke-width="3" />
+              <text x="42" y="430" font-size="25" font-weight="900" fill="#1e3a8a">LAYER 2: DISTRIBUTED COMPUTE</text>
+              <text x="42" y="470" font-size="28" font-weight="800" fill="#0f172a">Apache Spark / PySpark 3.5.7</text>
+              <text x="42" y="510" font-size="21" fill="#334155">Standalone Master + 2 Workers on Java 11</text>
+
+              <rect x="14" y="570" width="612" height="154" rx="20" fill="#f5f3ff" stroke="#7c3aed" stroke-width="3" />
+              <text x="42" y="616" font-size="25" font-weight="900" fill="#5b21b6">LAYER 1: DISTRIBUTED STORAGE</text>
+              <text x="42" y="656" font-size="28" font-weight="800" fill="#0f172a">Hadoop HDFS 3.3.6</text>
+              <text x="42" y="696" font-size="21" fill="#334155">NameNode + 2 DataNodes (4 MiB blocks, rep = 2)</text>
+
+              <polygon points="320,172 304,192 336,192" fill="#2563eb" />
+              <polygon points="320,358 304,378 336,378" fill="#1e3a8a" />
+              <polygon points="320,544 304,564 336,564" fill="#7c3aed" />
+            </svg>
+          </div>
+
+          <!-- Right: 4 Rich Technical Design Cards + Not Used Banner -->
+          <div class="flex-col" style="gap: 20px;">
+            <div class="grid-2 grow" style="gap: 20px;">
+              <div class="card card-accent-purple" style="justify-content: center; gap: 14px;">
+                <div class="card-header-row">
+                  <div class="icon-box icon-purple">01</div>
+                  <h4>Storage vs. Compute</h4>
+                </div>
+                <p style="font-size: 23px;">
+                  HDFS stores replicated raw inputs, Parquet outputs, and Spark event logs. Spark reads blocks directly, transforms records in parallel, and writes results back to HDFS.
+                </p>
+              </div>
+
+              <div class="card card-accent-blue" style="justify-content: center; gap: 14px;">
+                <div class="card-header-row">
+                  <div class="icon-box icon-blue">02</div>
+                  <h4>Standalone Spark Manager</h4>
+                </div>
+                <p style="font-size: 23px;">
+                  Uses Spark's native standalone master (<code>:7077</code>) to allocate one executor core per worker process. Keeps resource scheduling lightweight and transparent.
+                </p>
+              </div>
+
+              <div class="card card-accent-cyan" style="justify-content: center; gap: 14px;">
+                <div class="card-header-row">
+                  <div class="icon-box icon-cyan">03</div>
+                  <h4>Multi-Country Extensibility</h4>
+                </div>
+                <p style="font-size: 23px;">
+                  Supports <code>IN</code> (default) plus <code>US</code>, <code>GB</code>, <code>CA</code>, <code>DE</code>, and <code>FR</code> via a single country flag. Every country reuses identical cleaning and audit rules.
+                </p>
+              </div>
+
+              <div class="card card-accent-navy" style="justify-content: center; gap: 14px;">
+                <div class="card-header-row">
+                  <div class="icon-box icon-navy">04</div>
+                  <h4>Native Zero-Docker Setup</h4>
+                </div>
+                <p style="font-size: 23px;">
+                  Runs directly on an 8 GB RAM host without Docker or VMs. Pinned dependencies in <code>requirements.lock.txt</code> and Apache SHA-512 checks ensure repeatability.
+                </p>
+              </div>
+            </div>
+
+            <div class="card-dark" style="padding: 20px 28px; display: flex; flex-direction: column; gap: 8px;">
+              <div style="font-size: 19px; font-weight: 800; letter-spacing: 0.1em; color: #67e8f9; text-transform: uppercase;">
+                Explicitly Not Used in This Implementation
+              </div>
+              <p style="font-size: 24px; color: #ffffff;">
+                <strong>No MapReduce</strong> | <strong>No YARN</strong> | <strong>No Docker / VMs</strong> |
+                <strong>No External Database</strong> | <strong>No Live YouTube API</strong>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-corner-num">
+          <div class="progress-track"><div class="progress-fill"></div></div>
+          <span class="slide-num">03 / 13</span>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           SLIDE 4: HIGH-LEVEL SYSTEM ARCHITECTURE DIAGRAM
+           =================================================================== -->
+      <section class="slide" data-title="System Architecture Diagram">
+        <header class="slide-header">
+          <div class="eyebrow"><span class="eyebrow-dot"></span>04 | SYSTEM ARCHITECTURE</div>
+          <h2 class="slide-title">Single-Host Two-Worker Distributed Topology</h2>
+        </header>
+
+        <div class="slide-body flex-col" style="gap: 16px;">
+          <div class="diagram-frame grow" style="padding: 12px 16px;">
+            <svg viewBox="0 0 1760 725" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <marker id="mBlue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+                  <path d="M 0 1 L 10 5 L 0 9 z" fill="#1e3a8a" />
+                </marker>
+                <marker id="mPurp" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+                  <path d="M 0 1 L 10 5 L 0 9 z" fill="#7c3aed" />
+                </marker>
+                <marker id="mCyan" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+                  <path d="M 0 1 L 10 5 L 0 9 z" fill="#0891b2" />
+                </marker>
+                <marker id="mDash" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+                  <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b" />
+                </marker>
+              </defs>
+
+              <!-- ZONE 1 -->
+              <rect x="10" y="14" width="295" height="670" rx="18" fill="#ecfeff" stroke="#0891b2" stroke-width="2.5" stroke-dasharray="10 6" />
+              <text x="157" y="48" text-anchor="middle" font-size="21" font-weight="900" fill="#155e75">1. INPUT SOURCE</text>
+
+              <rect x="30" y="76" width="255" height="92" rx="44" fill="#ffffff" stroke="#0891b2" stroke-width="3" />
+              <text x="157" y="116" text-anchor="middle" font-size="22" font-weight="800" fill="#0f172a">Kaggle Archive</text>
+              <text x="157" y="146" text-anchor="middle" font-size="19" fill="#475569">youtube-new.zip</text>
+
+              <line x1="157" y1="168" x2="157" y2="236" stroke="#0891b2" stroke-width="3.5" marker-end="url(#mCyan)" />
+              <text x="170" y="210" font-size="18" font-weight="800" fill="#0e7490">HTTPS</text>
+
+              <rect x="30" y="242" width="255" height="104" rx="12" fill="#ffffff" stroke="#0891b2" stroke-width="3" />
+              <text x="157" y="284" text-anchor="middle" font-size="21" font-weight="800" fill="#0f172a">download_data.py</text>
+              <text x="157" y="318" text-anchor="middle" font-size="18" fill="#475569">Extract + SHA-256</text>
+
+              <line x1="157" y1="346" x2="157" y2="414" stroke="#0891b2" stroke-width="3.5" marker-end="url(#mCyan)" />
+
+              <polygon points="52,422 288,422 264,536 28,536" fill="#ffffff" stroke="#0891b2" stroke-width="3" />
+              <text x="158" y="464" text-anchor="middle" font-size="21" font-weight="800" fill="#0f172a">data/raw/</text>
+              <text x="158" y="494" text-anchor="middle" font-size="18" font-family="monospace" fill="#0e7490">INvideos.csv</text>
+              <text x="158" y="520" text-anchor="middle" font-size="18" font-family="monospace" fill="#0e7490">category_id.json</text>
+
+              <path d="M 32 574 L 282 574 L 282 654 Q 220 638 157 654 Q 95 670 32 654 Z" fill="#ffffff" stroke="#64748b" stroke-width="2.5" />
+              <text x="157" y="610" text-anchor="middle" font-size="19" font-weight="800" fill="#0f172a">setup.sh (SHA-512)</text>
+              <text x="157" y="636" text-anchor="middle" font-size="17" fill="#475569">Hadoop 3.3.6 + venv</text>
+
+              <!-- ZONE 2 -->
+              <rect x="345" y="14" width="445" height="670" rx="18" fill="#eff6ff" stroke="#1e3a8a" stroke-width="3" />
+              <text x="567" y="48" text-anchor="middle" font-size="21" font-weight="900" fill="#1e3a8a">2. MASTER NODE (127.0.0.1)</text>
+
+              <rect x="370" y="76" width="395" height="96" rx="12" fill="#ffffff" stroke="#2563eb" stroke-width="3" />
+              <text x="567" y="116" text-anchor="middle" font-size="22" font-weight="800" fill="#0f172a">run_pipeline.py</text>
+              <text x="567" y="148" text-anchor="middle" font-size="19" fill="#475569">HDFS put + spark-submit + export</text>
+
+              <rect x="370" y="212" width="395" height="110" rx="12" fill="#ffffff" stroke="#1e3a8a" stroke-width="3" />
+              <text x="567" y="252" text-anchor="middle" font-size="22" font-weight="800" fill="#1e3a8a">Spark Driver (analyze.py)</text>
+              <text x="567" y="284" text-anchor="middle" font-size="19" fill="#334155">Client mode | 768 MiB heap</text>
+              <text x="567" y="310" text-anchor="middle" font-size="18" fill="#2563eb">Schedules 4-partition stages</text>
+
+              <rect x="370" y="362" width="395" height="106" rx="12" fill="#ffffff" stroke="#2563eb" stroke-width="3" />
+              <text x="567" y="402" text-anchor="middle" font-size="22" font-weight="800" fill="#1e3a8a">Spark Standalone Master</text>
+              <text x="567" y="434" text-anchor="middle" font-size="19" font-family="monospace" fill="#2563eb">Port :7077 | Web UI :8080</text>
+              <text x="567" y="458" text-anchor="middle" font-size="17" fill="#475569">Allocates 1 executor per worker</text>
+
+              <rect x="370" y="510" width="395" height="114" rx="12" fill="#f5f3ff" stroke="#7c3aed" stroke-width="3" />
+              <text x="567" y="552" text-anchor="middle" font-size="22" font-weight="800" fill="#5b21b6">HDFS NameNode</text>
+              <text x="567" y="584" text-anchor="middle" font-size="19" font-family="monospace" fill="#7c3aed">RPC :9000 | JMX UI :9870</text>
+              <text x="567" y="610" text-anchor="middle" font-size="18" fill="#475569">Block map | Safe-mode min 2</text>
+
+              <!-- ZONE 3 -->
+              <rect x="835" y="14" width="510" height="670" rx="18" fill="#f8fafc" stroke="#2563eb" stroke-width="3" />
+              <text x="1090" y="48" text-anchor="middle" font-size="21" font-weight="900" fill="#1d4ed8">3. TWO LOGICAL WORKERS</text>
+
+              <rect x="860" y="72" width="460" height="284" rx="16" fill="#ffffff" stroke="#3b82f6" stroke-width="2.5" />
+              <text x="884" y="106" font-size="21" font-weight="900" fill="#1e3a8a">Worker 1 (1 core, 768m)</text>
+
+              <rect x="884" y="122" width="412" height="94" rx="12" fill="#eff6ff" stroke="#2563eb" stroke-width="2.5" />
+              <text x="1090" y="158" text-anchor="middle" font-size="21" font-weight="800" fill="#1e3a8a">Spark Worker 1 -> Executor 0</text>
+              <text x="1090" y="192" text-anchor="middle" font-size="19" font-weight="700" fill="#0891b2">29 Tasks Completed | :7078 / :8081</text>
+
+              <path d="M 884 246 A 206 16 0 0 1 1296 246 L 1296 326 A 206 16 0 0 1 884 326 Z" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2.5" />
+              <ellipse cx="1090" cy="246" rx="206" ry="16" fill="#ede9fe" stroke="#7c3aed" stroke-width="2.5" />
+              <text x="1090" y="286" text-anchor="middle" font-size="20" font-weight="800" fill="#5b21b6">HDFS DataNode 1 (Replica A)</text>
+              <text x="1090" y="316" text-anchor="middle" font-size="18" font-family="monospace" fill="#6d28d9">Ports :9866 / :9867 / :9864</text>
+
+              <rect x="860" y="378" width="460" height="284" rx="16" fill="#ffffff" stroke="#3b82f6" stroke-width="2.5" />
+              <text x="884" y="412" font-size="21" font-weight="900" fill="#1e3a8a">Worker 2 (1 core, 768m)</text>
+
+              <rect x="884" y="428" width="412" height="94" rx="12" fill="#eff6ff" stroke="#2563eb" stroke-width="2.5" />
+              <text x="1090" y="464" text-anchor="middle" font-size="21" font-weight="800" fill="#1e3a8a">Spark Worker 2 -> Executor 1</text>
+              <text x="1090" y="498" text-anchor="middle" font-size="19" font-weight="700" fill="#0891b2">31 Tasks Completed | :7079 / :8082</text>
+
+              <path d="M 884 552 A 206 16 0 0 1 1296 552 L 1296 632 A 206 16 0 0 1 884 632 Z" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2.5" />
+              <ellipse cx="1090" cy="552" rx="206" ry="16" fill="#ede9fe" stroke="#7c3aed" stroke-width="2.5" />
+              <text x="1090" y="592" text-anchor="middle" font-size="20" font-weight="800" fill="#5b21b6">HDFS DataNode 2 (Replica B)</text>
+              <text x="1090" y="622" text-anchor="middle" font-size="18" font-family="monospace" fill="#6d28d9">Ports :9886 / :9887 / :9884</text>
+
+              <!-- ZONE 4 -->
+              <rect x="1390" y="14" width="360" height="670" rx="18" fill="#f0fdfa" stroke="#0891b2" stroke-width="3" />
+              <text x="1570" y="48" text-anchor="middle" font-size="21" font-weight="900" fill="#155e75">4. AUDIT &amp; USER UI</text>
+
+              <path d="M 1416 76 L 1724 76 L 1724 202 Q 1647 180 1570 202 Q 1493 224 1416 202 Z" fill="#ffffff" stroke="#7c3aed" stroke-width="3" />
+              <text x="1570" y="116" text-anchor="middle" font-size="21" font-weight="800" fill="#5b21b6">artifacts/ Export</text>
+              <text x="1570" y="148" text-anchor="middle" font-size="18" font-family="monospace" fill="#334155">4 .jsonl datasets</text>
+              <text x="1570" y="176" text-anchor="middle" font-size="18" font-family="monospace" fill="#6d28d9">run.json | fsck</text>
+
+              <rect x="1416" y="246" width="308" height="106" rx="12" fill="#eff6ff" stroke="#1e3a8a" stroke-width="3" />
+              <text x="1570" y="286" text-anchor="middle" font-size="21" font-weight="800" fill="#1e3a8a">Audit Scripts</text>
+              <text x="1570" y="316" text-anchor="middle" font-size="18" fill="#334155">pandas CSV + Event Log</text>
+              <text x="1570" y="340" text-anchor="middle" font-size="17" fill="#0891b2">100% Match Verified</text>
+
+              <rect x="1416" y="394" width="308" height="122" rx="12" fill="#ffffff" stroke="#0891b2" stroke-width="3" />
+              <text x="1570" y="434" text-anchor="middle" font-size="22" font-weight="800" fill="#155e75">Streamlit Dashboard</text>
+              <text x="1570" y="466" text-anchor="middle" font-size="18" font-family="monospace" fill="#0891b2">dashboard/app.py :8501</text>
+              <text x="1570" y="496" text-anchor="middle" font-size="18" fill="#334155">4 Tabs | Plotly Charts</text>
+
+              <polygon points="1438,566 1726,566 1702,658 1414,658" fill="#ffffff" stroke="#1e3a8a" stroke-width="3" />
+              <text x="1570" y="606" text-anchor="middle" font-size="21" font-weight="800" fill="#0f172a">Browser &amp; CSV</text>
+              <text x="1570" y="636" text-anchor="middle" font-size="18" fill="#475569">Interactive Analytics</text>
+
+              <!-- ARROWS -->
+              <path d="M 276 478 L 325 478 L 325 124 L 366 124" fill="none" stroke="#1e3a8a" stroke-width="3.5" marker-end="url(#mBlue)" />
+              <line x1="567" y1="172" x2="567" y2="208" stroke="#1e3a8a" stroke-width="3.5" marker-end="url(#mBlue)" />
+              <line x1="567" y1="322" x2="567" y2="358" stroke="#1e3a8a" stroke-width="3.5" marker-end="url(#mBlue)" />
+
+              <path d="M 765 266 L 812 266 L 812 168 L 880 168" fill="none" stroke="#1e3a8a" stroke-width="3.5" marker-end="url(#mBlue)" />
+              <path d="M 765 282 L 812 282 L 812 468 L 880 468" fill="none" stroke="#1e3a8a" stroke-width="3.5" marker-end="url(#mBlue)" />
+
+              <path d="M 765 556 L 824 556 L 824 290 L 880 290" fill="none" stroke="#7c3aed" stroke-width="3.5" marker-end="url(#mPurp)" />
+              <path d="M 765 574 L 824 574 L 824 596 L 880 596" fill="none" stroke="#7c3aed" stroke-width="3.5" marker-end="url(#mPurp)" />
+
+              <path d="M 1296 290 L 1366 290 L 1366 140 L 1412 140" fill="none" stroke="#7c3aed" stroke-width="3.5" marker-end="url(#mPurp)" />
+              <path d="M 1296 596 L 1366 596 L 1366 140" fill="none" stroke="#7c3aed" stroke-width="3.5" />
+
+              <line x1="1570" y1="210" x2="1570" y2="242" stroke="#0891b2" stroke-width="3.5" marker-end="url(#mCyan)" />
+              <line x1="1570" y1="352" x2="1570" y2="390" stroke="#0891b2" stroke-width="3.5" marker-end="url(#mCyan)" />
+              <line x1="1570" y1="516" x2="1570" y2="562" stroke="#1e3a8a" stroke-width="3.5" marker-end="url(#mBlue)" />
+
+              <path d="M 1416 460 L 1378 460 L 1378 708 L 567 708 L 567 628" fill="none" stroke="#64748b" stroke-width="2.5" stroke-dasharray="8 6" marker-end="url(#mDash)" />
+              <rect x="705" y="692" width="580" height="28" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+              <text x="995" y="712" text-anchor="middle" font-size="17" font-weight="800" fill="#475569">Live Status Poll: NameNode JMX (:9870) + Spark JSON (:8080)</text>
+            </svg>
+          </div>
+
+          <div class="legend-strip">
+            <span class="legend-item"><span class="legend-swatch" style="background:#ecfeff; border:2.5px solid #0891b2;"></span>Input / Dashboard</span>
+            <span class="legend-item"><span class="legend-swatch" style="background:#eff6ff; border:2.5px solid #1e3a8a;"></span>Master &amp; Spark Compute</span>
+            <span class="legend-item"><span class="legend-swatch" style="background:#f5f3ff; border:2.5px solid #7c3aed;"></span>HDFS Storage (Cylinders)</span>
+            <span class="legend-item">Solid Line = Data / Control Flow</span>
+            <span class="legend-item">Dashed Line = Live Health Poll</span>
+          </div>
+        </div>
+
+        <div class="slide-corner-num">
+          <div class="progress-track"><div class="progress-fill"></div></div>
+          <span class="slide-num">04 / 13</span>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           SLIDE 5: MAJOR MODULES & RESPONSIBILITIES (Rich 3-Point Cards)
+           =================================================================== -->
+      <section class="slide" data-title="Repository Modules">
+        <header class="slide-header">
+          <div class="eyebrow"><span class="eyebrow-dot"></span>05 | CODEBASE ARCHITECTURE</div>
+          <h2 class="slide-title">Six Repository Modules &amp; Their Responsibilities</h2>
+        </header>
+
+        <div class="slide-body grid-3" style="grid-template-rows: 1fr 1fr; gap: 22px;">
+          <div class="card card-accent-navy" style="padding: 22px 24px; justify-content: space-between;">
+            <div class="card-header-row">
+              <div class="icon-box icon-navy">01</div>
+              <div>
+                <h4>Runtime Setup</h4>
+                <code>scripts/setup.sh</code>
+              </div>
+            </div>
+            <ul class="clean-list" style="gap: 12px;">
+              <li style="font-size: 22px;"><strong>Environment:</strong> Creates a Python 3.11 venv with pinned packages.</li>
+              <li style="font-size: 22px;"><strong>Integrity:</strong> Verifies Hadoop 3.3.6 tar.gz via Apache SHA-512.</li>
+              <li style="font-size: 22px;"><strong>Output:</strong> Isolated runtime under <code>~/.cache/youtube-pulse</code>.</li>
+            </ul>
+          </div>
+
+          <div class="card card-accent-cyan" style="padding: 22px 24px; justify-content: space-between;">
+            <div class="card-header-row">
+              <div class="icon-box icon-cyan">02</div>
+              <div>
+                <h4>Data Ingestion</h4>
+                <code>download_data.py</code>
+              </div>
+            </div>
+            <ul class="clean-list" style="gap: 12px;">
+              <li style="font-size: 22px;"><strong>Acquisition:</strong> Streams the public Kaggle archive over HTTPS.</li>
+              <li style="font-size: 22px;"><strong>Extraction:</strong> Unpacks only the chosen country's CSV and JSON.</li>
+              <li style="font-size: 22px;"><strong>Provenance:</strong> Saves URL, byte sizes, and SHA-256 hashes.</li>
+            </ul>
+          </div>
+
+          <div class="card card-accent-purple" style="padding: 22px 24px; justify-content: space-between;">
+            <div class="card-header-row">
+              <div class="icon-box icon-purple">03</div>
+              <div>
+                <h4>Cluster Manager</h4>
+                <code>scripts/cluster.py</code>
+              </div>
+            </div>
+            <ul class="clean-list purple-bullets" style="gap: 12px;">
+              <li style="font-size: 22px;"><strong>Config:</strong> Generates XML configs for master, worker1, worker2.</li>
+              <li style="font-size: 22px;"><strong>Lifecycle:</strong> Starts and stops all 7 processes with PID guards.</li>
+              <li style="font-size: 22px;"><strong>Health:</strong> Polls NameNode JMX (:9870) and Spark JSON (:8080).</li>
+            </ul>
+          </div>
+
+          <div class="card card-accent-blue" style="padding: 22px 24px; justify-content: space-between;">
+            <div class="card-header-row">
+              <div class="icon-box icon-blue">04</div>
+              <div>
+                <h4>Job Orchestrator</h4>
+                <code>run_pipeline.py</code>
+              </div>
+            </div>
+            <ul class="clean-list" style="gap: 12px;">
+              <li style="font-size: 22px;"><strong>Upload:</strong> Streams raw CSV and JSON into HDFS with replication 2.</li>
+              <li style="font-size: 22px;"><strong>Execution:</strong> Launches <code>spark-submit</code> with event logging enabled.</li>
+              <li style="font-size: 22px;"><strong>Export:</strong> Saves 4 JSONL datasets, <code>dfsadmin</code>, and <code>fsck</code> reports.</li>
+            </ul>
+          </div>
+
+          <div class="card card-accent-blue card-soft-blue" style="padding: 22px 24px; justify-content: space-between;">
+            <div class="card-header-row">
+              <div class="icon-box icon-blue">05</div>
+              <div>
+                <h4>Spark Analytics</h4>
+                <code>pipeline/analyze.py</code>
+              </div>
+            </div>
+            <ul class="clean-list" style="gap: 12px;">
+              <li style="font-size: 22px;"><strong>Cleaning:</strong> Validates rows, casts types, and deduplicates by date.</li>
+              <li style="font-size: 22px;"><strong>Enrichment:</strong> Broadcast-joins categories and computes engagement.</li>
+              <li style="font-size: 22px;"><strong>Persistence:</strong> Writes Parquet + JSON and checks read-back counts.</li>
+            </ul>
+          </div>
+
+          <div class="card card-accent-cyan" style="padding: 22px 24px; justify-content: space-between;">
+            <div class="card-header-row">
+              <div class="icon-box icon-cyan">06</div>
+              <div>
+                <h4>UI &amp; Verification</h4>
+                <code>dashboard/app.py</code>
+              </div>
+            </div>
+            <ul class="clean-list" style="gap: 12px;">
+              <li style="font-size: 22px;"><strong>Interface:</strong> Serves 4 interactive Plotly tabs and safe CSV download.</li>
+              <li style="font-size: 22px;"><strong>Audit:</strong> <code>verify_results.py</code> matches Spark outputs in pandas.</li>
+              <li style="font-size: 22px;"><strong>Proof:</strong> <code>collect_evidence.py</code> counts tasks per Spark executor.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="slide-corner-num">
+          <div class="progress-track"><div class="progress-fill"></div></div>
+          <span class="slide-num">05 / 13</span>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           SLIDE 6: END-TO-END EXECUTION WORKFLOW & DATA FLOW
+           =================================================================== -->
+      <section class="slide" data-title="Execution & Data Flow">
+        <header class="slide-header">
+          <div class="eyebrow"><span class="eyebrow-dot"></span>06 | EXECUTION WORKFLOW</div>
+          <h2 class="slide-title">Nine-Stage Data Transformation Pipeline</h2>
+        </header>
+
+        <div class="slide-body flex-col" style="gap: 20px;">
+          <div class="diagram-frame grow" style="padding: 16px;">
+            <svg viewBox="0 0 1760 595" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <marker id="fArr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+                  <path d="M 0 1 L 10 5 L 0 9 z" fill="#1e3a8a" />
+                </marker>
+                <marker id="fCyan" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+                  <path d="M 0 1 L 10 5 L 0 9 z" fill="#0891b2" />
+                </marker>
+              </defs>
+
+              <path d="M 16 68 A 120 16 0 0 1 256 68 L 256 178 A 120 16 0 0 1 16 178 Z" fill="#f5f3ff" stroke="#7c3aed" stroke-width="3" />
+              <ellipse cx="136" cy="68" rx="120" ry="16" fill="#ede9fe" stroke="#7c3aed" stroke-width="3" />
+              <text x="136" y="114" text-anchor="middle" font-size="21" font-weight="900" fill="#5b21b6">1. HDFS Raw</text>
+              <text x="136" y="144" text-anchor="middle" font-size="19" font-weight="700" fill="#334155">37,352 CSV rows</text>
+              <text x="136" y="168" text-anchor="middle" font-size="18" fill="#6d28d9">+ Category JSON</text>
+
+              <line x1="256" y1="126" x2="310" y2="126" stroke="#1e3a8a" stroke-width="3.5" marker-end="url(#fArr)" />
+
+              <rect x="316" y="56" width="268" height="140" rx="14" fill="#eff6ff" stroke="#2563eb" stroke-width="3" />
+              <text x="450" y="96" text-anchor="middle" font-size="21" font-weight="900" fill="#1e3a8a">2. Parse &amp; Split</text>
+              <text x="450" y="128" text-anchor="middle" font-size="19" fill="#334155">Multiline CSV read</text>
+              <text x="450" y="156" text-anchor="middle" font-size="19" font-family="monospace" font-weight="700" fill="#2563eb">repartition(4)</text>
+              <text x="450" y="182" text-anchor="middle" font-size="18" fill="#475569">Cast types &amp; UTC</text>
+
+              <line x1="584" y1="126" x2="636" y2="126" stroke="#1e3a8a" stroke-width="3.5" marker-end="url(#fArr)" />
+
+              <polygon points="758,40 874,126 758,212 642,126" fill="#f8fafc" stroke="#1e3a8a" stroke-width="3" />
+              <text x="758" y="114" text-anchor="middle" font-size="20" font-weight="900" fill="#0f172a">3. Valid Row?</text>
+              <text x="758" y="142" text-anchor="middle" font-size="18" fill="#475569">ID, date, &gt;= 0</text>
+
+              <line x1="758" y1="212" x2="758" y2="256" stroke="#64748b" stroke-width="3" marker-end="url(#fArr)" />
+              <text x="772" y="242" font-size="18" font-weight="800" fill="#475569">No</text>
+              <rect x="634" y="262" width="248" height="66" rx="12" fill="#f1f5f9" stroke="#64748b" stroke-width="2.5" />
+              <text x="758" y="292" text-anchor="middle" font-size="19" font-weight="800" fill="#334155">Drop Invalid/Dupes</text>
+              <text x="758" y="317" text-anchor="middle" font-size="18" font-weight="700" fill="#475569">5,087 rows removed</text>
+
+              <line x1="874" y1="126" x2="936" y2="126" stroke="#0891b2" stroke-width="3.5" marker-end="url(#fCyan)" />
+              <text x="902" y="114" text-anchor="middle" font-size="18" font-weight="800" fill="#0891b2">Yes</text>
+
+              <rect x="942" y="56" width="352" height="140" rx="14" fill="#eff6ff" stroke="#2563eb" stroke-width="3" />
+              <text x="1118" y="96" text-anchor="middle" font-size="21" font-weight="900" fill="#1e3a8a">4. Daily Dedup &amp; KPIs</text>
+              <text x="1118" y="128" text-anchor="middle" font-size="19" fill="#334155">1 row per video / date</text>
+              <text x="1118" y="156" text-anchor="middle" font-size="19" font-weight="700" fill="#2563eb">Highest views wins</text>
+              <text x="1118" y="182" text-anchor="middle" font-size="18" fill="#475569">Compute engagement_pct</text>
+
+              <line x1="1294" y1="126" x2="1348" y2="126" stroke="#1e3a8a" stroke-width="3.5" marker-end="url(#fArr)" />
+
+              <rect x="1354" y="56" width="390" height="140" rx="14" fill="#ecfeff" stroke="#0891b2" stroke-width="3" />
+              <text x="1549" y="96" text-anchor="middle" font-size="21" font-weight="900" fill="#155e75">5. Broadcast Join &amp; Cache</text>
+              <text x="1549" y="128" text-anchor="middle" font-size="19" fill="#334155">Attach category names</text>
+              <text x="1549" y="156" text-anchor="middle" font-size="19" fill="#475569">Unmatched -> "Unknown"</text>
+              <text x="1549" y="184" text-anchor="middle" font-size="20" font-weight="900" fill="#0891b2">32,265 snapshots cached</text>
+
+              <path d="M 1549 196 L 1549 448 L 1478 448" fill="none" stroke="#1e3a8a" stroke-width="3.5" marker-end="url(#fArr)" />
+
+              <rect x="1120" y="366" width="352" height="164" rx="14" fill="#eff6ff" stroke="#2563eb" stroke-width="3" />
+              <text x="1296" y="406" text-anchor="middle" font-size="21" font-weight="900" fill="#1e3a8a">6. Derive 4 Datasets</text>
+              <text x="1296" y="438" text-anchor="middle" font-size="19" fill="#334155"><tspan font-weight="800">latest:</tspan> 16,305 unique videos</text>
+              <text x="1296" y="468" text-anchor="middle" font-size="19" fill="#334155"><tspan font-weight="800">daily:</tspan> category trends / day</text>
+              <text x="1296" y="498" text-anchor="middle" font-size="19" fill="#334155"><tspan font-weight="800">categories:</tspan> views &amp; medians</text>
+
+              <line x1="1120" y1="448" x2="1056" y2="448" stroke="#1e3a8a" stroke-width="3.5" marker-end="url(#fArr)" />
+
+              <path d="M 760 392 A 145 16 0 0 1 1050 392 L 1050 508 A 145 16 0 0 1 760 508 Z" fill="#f5f3ff" stroke="#7c3aed" stroke-width="3" />
+              <ellipse cx="905" cy="392" rx="145" ry="16" fill="#ede9fe" stroke="#7c3aed" stroke-width="3" />
+              <text x="905" y="436" text-anchor="middle" font-size="21" font-weight="900" fill="#5b21b6">7. HDFS Results</text>
+              <text x="905" y="466" text-anchor="middle" font-size="18" font-family="monospace" fill="#334155">cleaned_parquet/</text>
+              <text x="905" y="492" text-anchor="middle" font-size="18" font-family="monospace" fill="#6d28d9">+ 4 JSON folders</text>
+
+              <line x1="760" y1="448" x2="694" y2="448" stroke="#1e3a8a" stroke-width="3.5" marker-end="url(#fArr)" />
+
+              <polygon points="568,364 688,448 568,532 448,448" fill="#f8fafc" stroke="#1e3a8a" stroke-width="3" />
+              <text x="568" y="438" text-anchor="middle" font-size="20" font-weight="900" fill="#0f172a">8. Read-Back</text>
+              <text x="568" y="466" text-anchor="middle" font-size="19" font-weight="700" fill="#2563eb">32,265 Match?</text>
+
+              <line x1="568" y1="532" x2="568" y2="574" stroke="#64748b" stroke-width="3" marker-end="url(#fArr)" />
+              <text x="582" y="566" font-size="18" font-weight="800" fill="#475569">No -> Abort (RuntimeError)</text>
+
+              <line x1="448" y1="448" x2="380" y2="448" stroke="#0891b2" stroke-width="3.5" marker-end="url(#fCyan)" />
+              <text x="414" y="434" text-anchor="middle" font-size="18" font-weight="800" fill="#0891b2">Yes</text>
+
+              <rect x="16" y="366" width="358" height="164" rx="28" fill="#0f172a" stroke="#06b6d4" stroke-width="3.5" />
+              <text x="195" y="410" text-anchor="middle" font-size="22" font-weight="900" fill="#67e8f9">9. Export &amp; Dashboard</text>
+              <text x="195" y="444" text-anchor="middle" font-size="19" fill="#ffffff">Write artifacts/run.json</text>
+              <text x="195" y="474" text-anchor="middle" font-size="19" fill="#e2e8f0">Export 4 .jsonl + Audit</text>
+              <text x="195" y="506" text-anchor="middle" font-size="19" font-weight="800" fill="#67e8f9">Completed in 16.86 sec</text>
+            </svg>
+          </div>
+
+          <div class="grid-3">
+            <div class="card card-soft-purple" style="padding: 18px 24px; gap: 6px;">
+              <h4>Parquet + JSON Outputs</h4>
+              <p style="font-size: 22px;">Parquet keeps typed schemas in HDFS; JSON powers fast dashboard export.</p>
+            </div>
+            <div class="card card-soft-blue" style="padding: 18px 24px; gap: 6px;">
+              <h4>In-Memory Caching</h4>
+              <p style="font-size: 22px;">Spark caches <code>snapshots</code> and <code>latest</code> so aggregations avoid re-reads.</p>
+            </div>
+            <div class="card card-soft-cyan" style="padding: 18px 24px; gap: 6px;">
+              <h4>Fail-Fast Verification</h4>
+              <p style="font-size: 22px;">The job reads back Parquet rows and halts immediately on any mismatch.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-corner-num">
+          <div class="progress-track"><div class="progress-fill"></div></div>
+          <span class="slide-num">06 / 13</span>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           SLIDE 7: KEY IMPLEMENTATION MECHANISMS (4 Left Cards + Rich Right Panel)
+           =================================================================== -->
+      <section class="slide" data-title="Core Engineering Mechanisms">
+        <header class="slide-header">
+          <div class="eyebrow"><span class="eyebrow-dot"></span>07 | IMPLEMENTATION DETAILS</div>
+          <h2 class="slide-title">Core Engineering Mechanisms in the Source Code</h2>
+        </header>
+
+        <div class="slide-body grid-55-45" style="gap: 28px;">
+          <!-- Left: 4 Balanced Mechanism Cards -->
+          <div class="flex-col" style="gap: 16px;">
+            <div class="card card-accent-navy grow" style="padding: 18px 24px; justify-content: center; gap: 8px;">
+              <h4>1. Multiline CSV &amp; Explicit Repartitioning</h4>
+              <p style="font-size: 22px;">
+                Multiline CSV reads as <strong>1 partition</strong>. The job runs <code>raw.repartition(4)</code>
+                with <code>shuffle.partitions=4</code> and <code>adaptive.enabled=false</code> so both executors share work.
+              </p>
+            </div>
+
+            <div class="card card-accent-purple grow" style="padding: 18px 24px; justify-content: center; gap: 8px;">
+              <h4>2. Deterministic Two-Stage Window SQL</h4>
+              <p style="font-size: 22px;">
+                <strong>Daily window:</strong> Keeps 1 row per <code>(country, video_id, date)</code> by highest views.<br />
+                <strong>Latest window:</strong> Selects the newest observation per <code>(country, video_id)</code>.
+              </p>
+            </div>
+
+            <div class="card card-accent-blue grow" style="padding: 18px 24px; justify-content: center; gap: 8px;">
+              <h4>3. Strict UTC Parsing &amp; Video Age</h4>
+              <p style="font-size: 22px;">
+                Parses <code>yy.dd.MM</code> dates under UTC with <code>timeParserPolicy=CORRECTED</code>, casts
+                numeric and Boolean flags, and derives <code>days_to_trend</code> from publish date.
+              </p>
+            </div>
+
+            <div class="card card-accent-cyan grow" style="padding: 18px 24px; justify-content: center; gap: 8px;">
+              <h4>4. Broadcast Join &amp; CSV Injection Safety</h4>
+              <p style="font-size: 22px;">
+                <code>F.broadcast(categories)</code> avoids shuffling video rows. Before CSV export,
+                <code>dashboard/app.py</code> prefixes cells starting with <code>= + - @</code> with <code>'</code>.
+              </p>
+            </div>
+          </div>
+
+          <!-- Right: Dark Formula Card + Oversized Executor Scheduling + Budget Bar -->
+          <div class="flex-col" style="gap: 18px;">
+            <div class="card-dark" style="padding: 22px 26px; gap: 10px; display: flex; flex-direction: column;">
+              <div style="font-size: 18px; font-weight: 800; letter-spacing: 0.12em; color: #67e8f9; text-transform: uppercase;">
+                Engagement Formula (pipeline/analyze.py)
+              </div>
+              <div style="font-family: var(--font-mono); font-size: 27px; font-weight: 800; color: #ffffff;">
+                100 * (likes + comments) / views
+              </div>
+              <p style="font-size: 21px; color: #cbd5e1;">
+                Returns <strong style="color:#ffffff;">NULL</strong> if views = 0 or ratings are disabled.
+                Category summaries use <strong style="color:#67e8f9;">median</strong> to resist extreme outliers.
+              </p>
+            </div>
+
+            <div class="card grow" style="padding: 22px 24px; justify-content: space-between; gap: 16px;">
+              <h3>Spark Executor Concurrency (Client Mode)</h3>
+              <svg viewBox="0 0 740 370" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <marker id="a7" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+                    <path d="M 0 1 L 10 5 L 0 9 z" fill="#2563eb" />
+                  </marker>
+                </defs>
+                <rect x="14" y="10" width="712" height="86" rx="14" fill="#eff6ff" stroke="#1e3a8a" stroke-width="3" />
+                <text x="370" y="46" text-anchor="middle" font-size="24" font-weight="900" fill="#1e3a8a">Driver (768 MiB) | 4-Partition Stages</text>
+                <text x="370" y="78" text-anchor="middle" font-size="20" font-weight="600" fill="#475569">Max 2 executor cores: 2 tasks run in parallel, 2 wait</text>
+
+                <line x1="188" y1="96" x2="188" y2="150" stroke="#2563eb" stroke-width="4" marker-end="url(#a7)" />
+                <line x1="552" y1="96" x2="552" y2="150" stroke="#7c3aed" stroke-width="4" marker-end="url(#a7)" />
+
+                <rect x="14" y="156" width="346" height="202" rx="16" fill="#ffffff" stroke="#2563eb" stroke-width="3" />
+                <text x="187" y="196" text-anchor="middle" font-size="24" font-weight="900" fill="#1e3a8a">Executor 0 (Worker 1)</text>
+                <text x="187" y="230" text-anchor="middle" font-size="20" font-family="monospace" fill="#2563eb">1 core | 512 MiB heap</text>
+                <rect x="38" y="248" width="298" height="54" rx="10" fill="#dbeafe" />
+                <text x="187" y="284" text-anchor="middle" font-size="24" font-weight="900" fill="#1e3a8a">29 Tasks Completed</text>
+                <text x="187" y="338" text-anchor="middle" font-size="20" font-weight="800" fill="#0891b2">0 Failed | Port :8081</text>
+
+                <rect x="380" y="156" width="346" height="202" rx="16" fill="#ffffff" stroke="#7c3aed" stroke-width="3" />
+                <text x="553" y="196" text-anchor="middle" font-size="24" font-weight="900" fill="#5b21b6">Executor 1 (Worker 2)</text>
+                <text x="553" y="230" text-anchor="middle" font-size="20" font-family="monospace" fill="#7c3aed">1 core | 512 MiB heap</text>
+                <rect x="404" y="248" width="298" height="54" rx="10" fill="#ede9fe" />
+                <text x="553" y="284" text-anchor="middle" font-size="24" font-weight="900" fill="#5b21b6">31 Tasks Completed</text>
+                <text x="553" y="338" text-anchor="middle" font-size="20" font-weight="800" fill="#0891b2">0 Failed | Port :8082</text>
+              </svg>
+              <p style="font-size: 20px; color: var(--slate-600);">
+                <strong>JVM Tuning:</strong> <code>-XX:ActiveProcessorCount=1</code> per executor keeps memory safe on an 8 GB RAM host.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-corner-num">
+          <div class="progress-track"><div class="progress-fill"></div></div>
+          <span class="slide-num">07 / 13</span>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           SLIDE 8: VERIFIED RESULTS & ANALYTICAL FINDINGS (INDIA RUN)
+           =================================================================== -->
+      <section class="slide" data-title="Verified Results - India Run">
+        <header class="slide-header">
+          <div class="eyebrow"><span class="eyebrow-dot"></span>08 | VERIFIED RESULTS (12 NOV 2026)</div>
+          <h2 class="slide-title">India Dataset: High Reach vs. High Engagement</h2>
+        </header>
+
+        <div class="slide-body flex-col" style="gap: 22px;">
+          <div class="grid-2 grow" style="gap: 28px;">
+            <div class="card card-accent-blue" style="justify-content: space-between;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3>Top 5 Categories by Views</h3>
+                <span class="pill pill-blue">83.17% of Total</span>
+              </div>
+
+              <svg viewBox="0 0 820 390" xmlns="http://www.w3.org/2000/svg">
+                <text x="4" y="42" font-size="24" font-weight="800" fill="#0f172a">Entertainment</text>
+                <text x="4" y="68" font-size="18" fill="#64748b">7,546 videos</text>
+                <rect x="235" y="18" width="420" height="50" rx="10" fill="#1e3a8a" />
+                <text x="670" y="52" font-size="25" font-weight="900" fill="#1e3a8a">4.34B</text>
+
+                <text x="4" y="120" font-size="24" font-weight="800" fill="#0f172a">Music</text>
+                <text x="4" y="146" font-size="18" fill="#64748b">1,213 videos</text>
+                <rect x="235" y="96" width="237" height="50" rx="10" fill="#2563eb" />
+                <text x="488" y="130" font-size="25" font-weight="900" fill="#2563eb">2.45B</text>
+
+                <text x="4" y="198" font-size="24" font-weight="800" fill="#0f172a">Film &amp; Anim.</text>
+                <text x="4" y="224" font-size="18" fill="#64748b">522 videos</text>
+                <rect x="235" y="174" width="91" height="50" rx="10" fill="#6366f1" />
+                <text x="342" y="208" font-size="25" font-weight="900" fill="#4338ca">937M</text>
+
+                <text x="4" y="276" font-size="24" font-weight="800" fill="#0f172a">Comedy</text>
+                <text x="4" y="302" font-size="18" fill="#64748b">1,114 videos</text>
+                <rect x="235" y="252" width="77" height="50" rx="10" fill="#7c3aed" />
+                <text x="328" y="286" font-size="25" font-weight="900" fill="#6d28d9">799M</text>
+
+                <text x="4" y="354" font-size="24" font-weight="800" fill="#0f172a">News &amp; Politics</text>
+                <text x="4" y="380" font-size="18" fill="#64748b">2,505 videos</text>
+                <rect x="235" y="330" width="72" height="50" rx="10" fill="#0891b2" />
+                <text x="323" y="364" font-size="25" font-weight="900" fill="#0891b2">745M</text>
+              </svg>
+
+              <p style="font-size: 21px; color: var(--slate-600);">
+                Entertainment captures <strong>38.93%</strong> of all observed views across 16,305 unique videos.
+              </p>
+            </div>
+
+            <div class="card card-accent-cyan" style="justify-content: space-between;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3>Median Engagement (%)</h3>
+                <span class="pill pill-cyan">Overall: 0.86%</span>
+              </div>
+
+              <svg viewBox="0 0 820 390" xmlns="http://www.w3.org/2000/svg">
+                <line x1="321" y1="8" x2="321" y2="386" stroke="#7c3aed" stroke-width="2.5" stroke-dasharray="8 6" />
+
+                <text x="4" y="52" font-size="24" font-weight="800" fill="#0f172a">Comedy</text>
+                <rect x="235" y="18" width="420" height="50" rx="10" fill="#0891b2" />
+                <text x="670" y="52" font-size="25" font-weight="900" fill="#0891b2">4.22%</text>
+
+                <text x="4" y="130" font-size="24" font-weight="800" fill="#0f172a">Music</text>
+                <rect x="235" y="96" width="189" height="50" rx="10" fill="#06b6d4" />
+                <text x="440" y="130" font-size="25" font-weight="900" fill="#0891b2">1.90%</text>
+
+                <text x="4" y="208" font-size="24" font-weight="800" fill="#0f172a">Film &amp; Anim.</text>
+                <rect x="235" y="174" width="158" height="50" rx="10" fill="#2563eb" />
+                <text x="409" y="208" font-size="25" font-weight="900" fill="#1e3a8a">1.59%</text>
+
+                <text x="4" y="286" font-size="24" font-weight="800" fill="#0f172a">News &amp; Politics</text>
+                <rect x="235" y="252" width="68" height="50" rx="10" fill="#64748b" />
+                <rect x="310" y="260" width="96" height="34" rx="6" fill="#ffffff" />
+                <text x="318" y="286" font-size="25" font-weight="900" fill="#334155">0.68%</text>
+
+                <text x="4" y="364" font-size="24" font-weight="800" fill="#0f172a">Entertainment</text>
+                <rect x="235" y="330" width="59" height="50" rx="10" fill="#94a3b8" />
+                <rect x="302" y="338" width="96" height="34" rx="6" fill="#ffffff" />
+                <text x="310" y="364" font-size="25" font-weight="900" fill="#334155">0.59%</text>
+
+                <rect x="424" y="314" width="268" height="44" rx="10" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2" />
+                <text x="558" y="343" text-anchor="middle" font-size="20" font-weight="800" fill="#5b21b6">Dashed = 0.86% median</text>
+              </svg>
+
+              <p style="font-size: 21px; color: var(--slate-600);">
+                <strong>Key Finding:</strong> Comedy earns <strong>7x higher engagement</strong> than Entertainment despite fewer views.
+              </p>
+            </div>
+          </div>
+
+          <div class="grid-4">
+            <div class="kpi-tile card-accent-navy" style="padding: 16px 22px;">
+              <span class="kpi-label">Latest Likes</span>
+              <span class="kpi-value text-navy" style="font-size: 42px;">235.37M</span>
+            </div>
+            <div class="kpi-tile card-accent-purple" style="padding: 16px 22px;">
+              <span class="kpi-label">Latest Comments</span>
+              <span class="kpi-value text-purple" style="font-size: 42px;">24.15M</span>
+            </div>
+            <div class="kpi-tile card-accent-blue" style="padding: 16px 22px;">
+              <span class="kpi-label">Spark Job Time</span>
+              <span class="kpi-value text-blue" style="font-size: 42px;">16.86 sec</span>
+            </div>
+            <div class="kpi-tile card-accent-cyan" style="padding: 16px 22px;">
+              <span class="kpi-label">Executor Balance</span>
+              <span class="kpi-value text-cyan" style="font-size: 42px;">29 / 31</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-corner-num">
+          <div class="progress-track"><div class="progress-fill"></div></div>
+          <span class="slide-num">08 / 13</span>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           SLIDE 9: INTERACTIVE DASHBOARD & PRACTICAL APPLICATIONS (Full Rich Cards)
+           =================================================================== -->
+      <section class="slide" data-title="Dashboard & Applications">
+        <header class="slide-header">
+          <div class="eyebrow"><span class="eyebrow-dot"></span>09 | USER INTERFACE &amp; USE CASES</div>
+          <h2 class="slide-title">Streamlit Dashboard &amp; Practical Applications</h2>
+        </header>
+
+        <div class="slide-body grid-40-60" style="gap: 28px;">
+          <!-- Left: Full Uncropped Screenshot -->
+          <div class="screenshot-frame" style="justify-content: space-between;">
+            <div class="browser-dots">
+              <span class="browser-dot" style="background:#3b82f6;"></span>
+              <span class="browser-dot" style="background:#7c3aed;"></span>
+              <span class="browser-dot" style="background:#06b6d4;"></span>
+              <span class="browser-url">http://127.0.0.1:8501 (docs/dashboard.png)</span>
+            </div>
+            <img src="assets/dashboard.png" alt="YouTube Pulse Streamlit Dashboard" class="screenshot-img" />
+          </div>
+
+          <!-- Right: 4-Tab Strip + 4 Substantive Application Cards -->
+          <div class="flex-col" style="gap: 18px;">
+            <div class="card card-soft-blue" style="padding: 18px 24px; gap: 12px;">
+              <h4>Four Interactive Tabs + Instant Read-Only Filters</h4>
+              <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <span class="pill pill-navy">1. Category Insights</span>
+                <span class="pill pill-blue">2. Trending Activity</span>
+                <span class="pill pill-purple">3. Video Explorer</span>
+                <span class="pill pill-cyan">4. Cluster &amp; Methodology</span>
+              </div>
+              <p style="font-size: 22px;">
+                Sidebar filters by <strong>date range</strong>, <strong>category</strong>, <strong>title/channel search</strong>,
+                and <strong>minimum views</strong> using pandas without launching new Spark jobs.
+              </p>
+            </div>
+
+            <div class="grid-2 grow" style="gap: 18px;">
+              <div class="card card-accent-navy" style="padding: 20px 24px; justify-content: center; gap: 12px;">
+                <h4>1. Category Benchmarking</h4>
+                <p style="font-size: 22px;">
+                  Media teams contrast reach against interaction ratio. Example: spotting Comedy's 4.22% engagement vs. Entertainment's 0.59%.
+                </p>
+              </div>
+
+              <div class="card card-accent-purple" style="padding: 20px 24px; justify-content: center; gap: 12px;">
+                <h4>2. Cross-Country Studies</h4>
+                <p style="font-size: 22px;">
+                  Researchers switch between <code>IN</code>, <code>US</code>, <code>GB</code>, <code>CA</code>, <code>DE</code>, and <code>FR</code> while keeping identical validation and metric formulas.
+                </p>
+              </div>
+
+              <div class="card card-accent-blue" style="padding: 20px 24px; justify-content: center; gap: 12px;">
+                <h4>3. Big Data Teaching Lab</h4>
+                <p style="font-size: 22px;">
+                  Students inspect live HDFS DataNode counts, Spark Master status (:8080), and event-log task proofs directly inside Tab 4.
+                </p>
+              </div>
+
+              <div class="card card-accent-cyan" style="padding: 20px 24px; justify-content: center; gap: 12px;">
+                <h4>4. Safe Analyst Exports</h4>
+                <p style="font-size: 22px;">
+                  Analysts rank videos by views, likes, comments, or engagement, open watch links, and download formula-safe CSV files.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-corner-num">
+          <div class="progress-track"><div class="progress-fill"></div></div>
+          <span class="slide-num">09 / 13</span>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           SLIDE 10: SIX-LAYER VERIFICATION & PROJECT STRENGTHS (Filled & Balanced)
+           =================================================================== -->
+      <section class="slide" data-title="Verification & Strengths">
+        <header class="slide-header">
+          <div class="eyebrow"><span class="eyebrow-dot"></span>10 | QUALITY ASSURANCE &amp; STRENGTHS</div>
+          <h2 class="slide-title">Six-Layer Verification Suite &amp; Project Strengths</h2>
+        </header>
+
+        <div class="slide-body grid-55-45" style="gap: 28px;">
+          <!-- Left: Verification Table + Summary Highlight -->
+          <div class="flex-col" style="gap: 18px;">
+            <table class="data-table grow">
+              <thead>
+                <tr>
+                  <th>Verification Layer</th>
+                  <th>Recorded Outcome</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>PySpark Unit Tests</strong> (<code>test_analysis.py</code>)</td>
+                  <td><span class="pill pill-blue">4 Passed</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Pandas CSV Audit</strong> (<code>verify_results.py</code>)</td>
+                  <td><span class="pill pill-cyan">100% Match</span></td>
+                </tr>
+                <tr>
+                  <td><strong>HDFS Parquet Read-Back</strong></td>
+                  <td><span class="pill pill-purple">32,265 Rows</span></td>
+                </tr>
+                <tr>
+                  <td><strong>HDFS Block Replication</strong> (<code>fsck</code>)</td>
+                  <td><span class="pill pill-purple">HEALTHY (2 Nodes)</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Spark Event Log Proof</strong></td>
+                  <td><span class="pill pill-blue">29 + 31 Tasks</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Streamlit AppTest + Restart</strong></td>
+                  <td><span class="pill pill-cyan">Passed | Data Kept</span></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="card card-soft-blue" style="padding: 16px 22px; gap: 6px;">
+              <p style="font-size: 21px;">
+                <strong>Lifecycle Verified:</strong> All 7 services stopped and restarted cleanly while preserving healthy HDFS blocks and saved analytical artifacts.
+              </p>
+            </div>
+          </div>
+
+          <!-- Right: 4 Rich Strength Cards -->
+          <div class="flex-col" style="gap: 16px;">
+            <div class="card card-accent-navy grow" style="padding: 18px 24px; justify-content: center; gap: 8px;">
+              <h4>1. Independent Ground-Truth Audit</h4>
+              <p style="font-size: 22px;">
+                <code>verify_results.py</code> rebuilds latest video stats from the raw CSV in pandas and verifies all 16,305 video IDs, views, likes, and comments.
+              </p>
+            </div>
+
+            <div class="card card-accent-purple grow" style="padding: 18px 24px; justify-content: center; gap: 8px;">
+              <h4>2. Proven Multi-Executor Execution</h4>
+              <p style="font-size: 22px;">
+                Parsing <code>spark-events.jsonl</code> proves both Executor 0 (29 tasks) and Executor 1 (31 tasks) completed work with 0 failures.
+              </p>
+            </div>
+
+            <div class="card card-accent-blue grow" style="padding: 18px 24px; justify-content: center; gap: 8px;">
+              <h4>3. End-to-End Integrity &amp; Provenance</h4>
+              <p style="font-size: 22px;">
+                Apache SHA-512 checks protect Hadoop binaries, SHA-256 hashes track input datasets, and <code>run.json</code> logs exact counts.
+              </p>
+            </div>
+
+            <div class="card card-accent-cyan grow" style="padding: 18px 24px; justify-content: center; gap: 8px;">
+              <h4>4. Honest, Transparent Methodology</h4>
+              <p style="font-size: 22px;">
+                Both the UI and report disclose cumulative global counters, disabled-rating nulls, and single-host boundaries openly.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-corner-num">
+          <div class="progress-track"><div class="progress-fill"></div></div>
+          <span class="slide-num">10 / 13</span>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           SLIDE 11: LIMITATIONS & DOCUMENTED PATH TO 3 PHYSICAL MACHINES
+           =================================================================== -->
+      <section class="slide" data-title="Limitations & Future Scope">
+        <header class="slide-header">
+          <div class="eyebrow"><span class="eyebrow-dot"></span>11 | LIMITATIONS &amp; FUTURE SCOPE</div>
+          <h2 class="slide-title">Verified Limits &amp; Scaling to Three Physical PCs</h2>
+        </header>
+
+        <div class="slide-body grid-2" style="gap: 28px;">
+          <!-- Left: 4 Detailed Limitation Cards (Constraint + Impact) -->
+          <div class="flex-col" style="gap: 16px;">
+            <div class="card card-accent-navy grow" style="padding: 18px 24px; justify-content: center; gap: 8px;">
+              <h4>1. Single Physical Host &amp; Shared Disk</h4>
+              <p style="font-size: 22px;">
+                Both HDFS replicas live on one Mac disk. Replication demonstrates HDFS mechanics but does not protect against physical hardware failure.
+              </p>
+            </div>
+
+            <div class="card card-accent-blue grow" style="padding: 18px 24px; justify-content: center; gap: 8px;">
+              <h4>2. Small Dataset Scale (37,352 Rows)</h4>
+              <p style="font-size: 22px;">
+                The India CSV fits easily on one laptop. The project proves distributed coordination, not a performance speedup over single-node tools.
+              </p>
+            </div>
+
+            <div class="card card-accent-purple grow" style="padding: 18px 24px; justify-content: center; gap: 8px;">
+              <h4>3. Historical Sample &amp; Global Counters</h4>
+              <p style="font-size: 22px;">
+                Covers 2017-2018 trending lists only. View counts are cumulative worldwide totals, not views gained exclusively inside India.
+              </p>
+            </div>
+
+            <div class="card card-accent-cyan grow" style="padding: 18px 24px; justify-content: center; gap: 8px;">
+              <h4>4. In-Memory UI &amp; Loopback Security</h4>
+              <p style="font-size: 22px;">
+                Streamlit loads the full JSONL export into pandas RAM, and local ports lack authentication for public network exposure.
+              </p>
+            </div>
+          </div>
+
+          <!-- Right: 3-PC Target Topology Graphic + 4-Item Future Roadmap -->
+          <div class="flex-col" style="gap: 18px;">
+            <div class="card card-accent-blue" style="padding: 20px 24px; gap: 12px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h4>Target 3-PC LAN Topology</h4>
+                <span class="pill pill-blue">Documented / Unverified</span>
+              </div>
+
+              <svg viewBox="0 0 820 295" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <marker id="a11" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+                    <path d="M 0 1 L 10 5 L 0 9 z" fill="#2563eb" />
+                  </marker>
+                </defs>
+                <rect x="170" y="10" width="480" height="102" rx="16" fill="#0f172a" stroke="#2563eb" stroke-width="3" />
+                <text x="410" y="48" text-anchor="middle" font-size="22" font-weight="900" fill="#67e8f9">Master PC (MASTER_IP)</text>
+                <text x="410" y="80" text-anchor="middle" font-size="19" fill="#ffffff">NameNode :9000 | Spark :7077 | Driver | UI</text>
+                <text x="410" y="102" text-anchor="middle" font-size="16" fill="#94a3b8">Client deploy mode with reachable driver host</text>
+
+                <line x1="300" y1="112" x2="205" y2="176" stroke="#2563eb" stroke-width="3.5" marker-end="url(#a11)" />
+                <line x1="520" y1="112" x2="615" y2="176" stroke="#2563eb" stroke-width="3.5" marker-end="url(#a11)" />
+                <rect x="220" y="135" width="380" height="28" rx="6" fill="#ffffff" stroke="#dbeafe" stroke-width="1.5" />
+                <text x="410" y="155" text-anchor="middle" font-size="18" font-weight="800" fill="#1e3a8a">Trusted Private LAN (Distinct Host IPs)</text>
+
+                <rect x="14" y="182" width="380" height="102" rx="16" fill="#eff6ff" stroke="#2563eb" stroke-width="3" />
+                <text x="204" y="218" text-anchor="middle" font-size="22" font-weight="900" fill="#1e3a8a">Worker PC 1 (Local Disk)</text>
+                <text x="204" y="248" text-anchor="middle" font-size="19" fill="#334155">DataNode 1 + Spark Worker 1</text>
+                <text x="204" y="272" text-anchor="middle" font-size="17" fill="#2563eb">Independent replica + executor</text>
+
+                <rect x="426" y="182" width="380" height="102" rx="16" fill="#f5f3ff" stroke="#7c3aed" stroke-width="3" />
+                <text x="616" y="218" text-anchor="middle" font-size="22" font-weight="900" fill="#5b21b6">Worker PC 2 (Local Disk)</text>
+                <text x="616" y="248" text-anchor="middle" font-size="19" fill="#334155">DataNode 2 + Spark Worker 2</text>
+                <text x="616" y="272" text-anchor="middle" font-size="17" fill="#7c3aed">Independent replica + executor</text>
+              </svg>
+            </div>
+
+            <div class="card card-accent-purple grow" style="padding: 20px 26px; justify-content: center; gap: 14px;">
+              <h4>Future Engineering Roadmap</h4>
+              <ul class="clean-list purple-bullets" style="gap: 12px;">
+                <li style="font-size: 22px;"><strong>3-PC Verification:</strong> Test physical LAN networking and distinct DataNode IPs.</li>
+                <li style="font-size: 22px;"><strong>Larger Workloads:</strong> Merge all 6 countries and benchmark multi-GB datasets.</li>
+                <li style="font-size: 22px;"><strong>Direct Query Layer:</strong> Query HDFS Parquet directly instead of in-memory pandas.</li>
+                <li style="font-size: 22px;"><strong>Scheduled Ingestion:</strong> Add a YouTube Data API v3 collector with quota control.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-corner-num">
+          <div class="progress-track"><div class="progress-fill"></div></div>
+          <span class="slide-num">11 / 13</span>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           SLIDE 12: KEY TAKEAWAYS (Dedicated Slide)
+           =================================================================== -->
+      <section class="slide" data-title="Key Takeaways">
+        <header class="slide-header">
+          <div class="eyebrow"><span class="eyebrow-dot"></span>12 | KEY TAKEAWAYS</div>
+          <h2 class="slide-title">Four Core Technical Takeaways from YouTube Pulse</h2>
+        </header>
+
+        <div class="slide-body flex-col" style="gap: 24px;">
+          <div class="grid-2 grow" style="gap: 24px;">
+            <div class="card card-accent-navy" style="justify-content: center; gap: 14px;">
+              <div class="card-header-row">
+                <div class="icon-box icon-navy">01</div>
+                <h4>Clean Distributed Architecture</h4>
+              </div>
+              <p>
+                Separating storage (HDFS 3.3.6), compute (Spark 3.5.7), and exploration (Streamlit 1.50)
+                produces a modular, maintainable batch pipeline without unnecessary framework bloat.
+              </p>
+            </div>
+
+            <div class="card card-accent-purple" style="justify-content: center; gap: 14px;">
+              <div class="card-header-row">
+                <div class="icon-box icon-purple">02</div>
+                <h4>Disciplined Time-Series Modeling</h4>
+              </div>
+              <p>
+                Two-stage Spark window deduplication preserves 32,265 daily snapshots for trend charts
+                while isolating 16,305 unique videos so cumulative views are never double-counted.
+              </p>
+            </div>
+
+            <div class="card card-accent-blue" style="justify-content: center; gap: 14px;">
+              <div class="card-header-row">
+                <div class="icon-box icon-blue">03</div>
+                <h4>Reach and Engagement Differ Sharply</h4>
+              </div>
+              <p>
+                In the verified India run, Entertainment led views (4.34B) while Comedy achieved 7x higher
+                median engagement (4.22% vs. 0.59%), proving both metrics are required.
+              </p>
+            </div>
+
+            <div class="card card-accent-cyan" style="justify-content: center; gap: 14px;">
+              <div class="card-header-row">
+                <div class="icon-box icon-cyan">04</div>
+                <h4>Evidence-First Verification</h4>
+              </div>
+              <p>
+                Independent pandas CSV audits, Parquet read-back checks, HDFS block reports, and Spark
+                event logs (29 + 31 tasks, 0 failed) turn architectural claims into verifiable proof.
+              </p>
+            </div>
+          </div>
+
+          <!-- Project-by-the-Numbers Summary Strip -->
+          <div class="grid-4">
+            <div class="kpi-tile card-accent-navy" style="padding: 16px 22px;">
+              <span class="kpi-label">Data Reduction</span>
+              <span class="kpi-value text-navy" style="font-size: 36px;">37.3K -> 16.3K</span>
+              <span class="kpi-sub">Raw rows to unique videos</span>
+            </div>
+            <div class="kpi-tile card-accent-purple" style="padding: 16px 22px;">
+              <span class="kpi-label">Spark Execution</span>
+              <span class="kpi-value text-purple" style="font-size: 36px;">60 Tasks / 0 Fail</span>
+              <span class="kpi-sub">Balanced across 2 executors</span>
+            </div>
+            <div class="kpi-tile card-accent-blue" style="padding: 16px 22px;">
+              <span class="kpi-label">Automated Tests</span>
+              <span class="kpi-value text-blue" style="font-size: 36px;">5 Passed</span>
+              <span class="kpi-sub">4 PySpark + 1 Streamlit UI</span>
+            </div>
+            <div class="kpi-tile card-accent-cyan" style="padding: 16px 22px;">
+              <span class="kpi-label">CSV Audit Match</span>
+              <span class="kpi-value text-cyan" style="font-size: 36px;">100% Exact</span>
+              <span class="kpi-sub">Views, likes, and comments</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-corner-num">
+          <div class="progress-track"><div class="progress-fill"></div></div>
+          <span class="slide-num">12 / 13</span>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           SLIDE 13: CONCLUSION (Dedicated Formal Academic Closing Slide)
+           =================================================================== -->
+      <section class="slide slide-hero" data-title="Conclusion">
+        <header class="slide-header">
+          <div class="eyebrow"><span class="eyebrow-dot"></span>13 | CONCLUSION</div>
+          <h2 class="slide-title">Project Objectives Achieved &amp; Final Conclusion</h2>
+        </header>
+
+        <div class="slide-body flex-col" style="gap: 26px; justify-content: space-between;">
+          <!-- Top: Core Academic Thesis Banner -->
+          <div class="card-dark" style="padding: 32px 38px; display: flex; flex-direction: column; gap: 14px;">
+            <div style="font-size: 20px; font-weight: 800; letter-spacing: 0.14em; color: #67e8f9; text-transform: uppercase;">
+              Core Engineering Conclusion
+            </div>
+            <div style="font-size: 40px; font-weight: 900; line-height: 1.18; color: #ffffff;">
+              Reliable Big Data analytics requires both distributed infrastructure and disciplined data modeling.
+            </div>
+            <p style="font-size: 24px; color: #cbd5e1;">
+              YouTube Pulse demonstrates how Hadoop HDFS, Apache Spark, and Streamlit combine into an auditable,
+              reproducible workflow that turns noisy historical snapshots into accurate category and video insights.
+            </p>
+          </div>
+
+          <!-- Middle: 6 Project Objectives Achieved (from PROJECT_REPORT.md Section 2) -->
+          <div class="grid-3 grow" style="gap: 20px;">
+            <div class="card card-accent-purple" style="padding: 20px 24px; justify-content: center; gap: 8px;">
+              <h4>Objective 1: Replicated HDFS</h4>
+              <p style="font-size: 22px;">Stored source CSV, JSON, Parquet, and event logs across 2 DataNodes with replication factor 2.</p>
+            </div>
+            <div class="card card-accent-blue" style="padding: 20px 24px; justify-content: center; gap: 8px;">
+              <h4>Objective 2: Spark Processing</h4>
+              <p style="font-size: 22px;">Implemented cleaning, window deduplication, broadcast joins, and aggregations in PySpark.</p>
+            </div>
+            <div class="card card-accent-cyan" style="padding: 20px 24px; justify-content: center; gap: 8px;">
+              <h4>Objective 3: Accurate Metrics</h4>
+              <p style="font-size: 22px;">Eliminated cumulative double-counting and handled disabled ratings and unmatched categories safely.</p>
+            </div>
+            <div class="card card-accent-navy" style="padding: 20px 24px; justify-content: center; gap: 8px;">
+              <h4>Objective 4: Category Insights</h4>
+              <p style="font-size: 22px;">Measured views, likes, comments, and median engagement across 16,305 distinct India videos.</p>
+            </div>
+            <div class="card card-accent-blue" style="padding: 20px 24px; justify-content: center; gap: 8px;">
+              <h4>Objective 5: Interactive UI</h4>
+              <p style="font-size: 22px;">Delivered a 4-tab Streamlit dashboard with instant filtering, rankings, and safe CSV export.</p>
+            </div>
+            <div class="card card-accent-purple" style="padding: 20px 24px; justify-content: center; gap: 8px;">
+              <h4>Objective 6: Full Verification</h4>
+              <p style="font-size: 22px;">Confirmed 2-executor execution in event logs and 100% counter accuracy against raw CSV.</p>
+            </div>
+          </div>
+
+          <!-- Bottom: Formal Closing Strip -->
+          <div class="card card-soft-blue" style="padding: 18px 30px; flex-direction: row; justify-content: space-between; align-items: center;">
+            <div style="font-size: 28px; font-weight: 900; color: var(--deep-blue);">
+              Thank You for Your Time and Attention
+            </div>
+            <div style="font-size: 24px; font-weight: 700; color: var(--electric-blue);">
+              Open for Committee Questions &amp; Discussion
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-corner-num">
+          <div class="progress-track"><div class="progress-fill"></div></div>
+          <span class="slide-num">13 / 13</span>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Floating Navigation Controls (Hidden until hover; hidden in PDF) -->
+  <nav class="nav-hud" id="navHud" aria-label="Slide Navigation">
+    <button class="nav-btn" id="btnPrev">Prev</button>
+    <span class="nav-counter" id="navCounter">01 / 13</span>
+    <button class="nav-btn" id="btnNext">Next</button>
+    <button class="nav-btn" id="btnOverview">Grid</button>
+    <button class="nav-btn" id="btnFullscreen">Fullscreen</button>
+    <button class="nav-btn" id="btnPrint">PDF</button>
+  </nav>
+
+  <!-- Slide Overview Modal -->
+  <div class="overview-modal" id="overviewModal" role="dialog" aria-modal="true" aria-label="Slide Overview">
+    <div class="overview-header">
+      <h2 style="font-size: 30px; color: #ffffff;">YouTube Pulse - Slide Overview (13 Slides)</h2>
+      <button class="nav-btn" id="btnCloseOverview">Close (Esc)</button>
+    </div>
+    <div class="overview-grid" id="overviewGrid"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
