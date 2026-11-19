@@ -1,0 +1,744 @@
+/* ==========================================================================
+   YouTube Pulse — Formal Committee 16:9 Presentation Design System
+   Logical Canvas: 1920 x 1080 (16:9 Widescreen)
+   Strict Palette: Deep Blue, Electric Blue, Purple, Cyan, Slate, White
+   Classroom-Projector Typography: Large, Bold, Zero Redundant Chrome
+   ========================================================================== */
+
+:root {
+  --deep-blue: #0f172a;
+  --navy: #1e3a8a;
+  --electric-blue: #2563eb;
+  --sky-blue: #3b82f6;
+  --purple: #7c3aed;
+  --purple-deep: #5b21b6;
+  --purple-soft: #f5f3ff;
+  --cyan: #0891b2;
+  --cyan-bright: #06b6d4;
+  --cyan-soft: #ecfeff;
+  --blue-soft: #eff6ff;
+  --slate-900: #0f172a;
+  --slate-700: #334155;
+  --slate-600: #475569;
+  --slate-500: #64748b;
+  --slate-300: #cbd5e1;
+  --slate-200: #e2e8f0;
+  --slate-100: #f1f5f9;
+  --slate-50: #f8fafc;
+  --white: #ffffff;
+
+  --font-sans: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Cascadia Code', 'Consolas', monospace;
+
+  --shadow-sm: 0 3px 10px rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 10px 28px rgba(30, 58, 138, 0.09);
+  --shadow-lg: 0 18px 42px rgba(37, 99, 235, 0.14);
+  --radius-sm: 12px;
+  --radius-md: 18px;
+  --radius-lg: 24px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #dbeafe;
+  font-family: var(--font-sans);
+  color: var(--slate-900);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ==========================================================================
+   Stage & 16:9 Responsive Scaling
+   ========================================================================== */
+.deck-viewport {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 20% 20%, #eef2ff 0%, #dbeafe 50%, #cbd5e1 100%);
+  overflow: hidden;
+}
+
+.slide-stage {
+  position: relative;
+  width: 1920px;
+  height: 1080px;
+  transform-origin: center center;
+  box-shadow: 0 28px 80px rgba(15, 23, 42, 0.24);
+  background: var(--white);
+  overflow: hidden;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  width: 1920px;
+  height: 1080px;
+  padding: 42px 60px 54px 60px;
+  display: none;
+  flex-direction: column;
+  background:
+    radial-gradient(circle at 96% 4%, rgba(6, 182, 212, 0.09) 0%, transparent 34%),
+    radial-gradient(circle at 4% 96%, rgba(124, 58, 237, 0.08) 0%, transparent 36%),
+    linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  overflow: hidden;
+}
+
+.slide::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(30, 58, 138, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(30, 58, 138, 0.035) 1px, transparent 1px);
+  background-size: 56px 56px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.slide::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 8px;
+  background: linear-gradient(90deg, var(--navy) 0%, var(--electric-blue) 42%, var(--purple) 76%, var(--cyan-bright) 100%);
+  z-index: 2;
+}
+
+.slide > * {
+  position: relative;
+  z-index: 1;
+}
+
+.slide.active {
+  display: flex;
+}
+
+/* ==========================================================================
+   Clean Header (No Redundant Top-Right Badges) & Minimal Slide Number Only
+   ========================================================================== */
+.slide-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-bottom: 16px;
+  margin-bottom: 24px;
+  border-bottom: 2.5px solid var(--slate-200);
+  flex-shrink: 0;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--electric-blue);
+}
+
+.eyebrow-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--electric-blue), var(--cyan-bright));
+  box-shadow: 0 0 12px rgba(37, 99, 235, 0.5);
+}
+
+.slide-title {
+  font-size: 52px;
+  font-weight: 900;
+  letter-spacing: -0.028em;
+  line-height: 1.08;
+  color: var(--deep-blue);
+}
+
+.slide-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* Minimal bottom-right slide number + thin progress bar only */
+.slide-corner-num {
+  position: absolute;
+  right: 64px;
+  bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-family: var(--font-mono);
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--slate-500);
+  z-index: 3;
+}
+
+.progress-track {
+  width: 110px;
+  height: 6px;
+  background: var(--slate-200);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--electric-blue), var(--purple), var(--cyan-bright));
+  border-radius: 999px;
+}
+
+/* ==========================================================================
+   Projector-Ready Large Typography
+   ========================================================================== */
+h3 {
+  font-size: 31px;
+  font-weight: 800;
+  color: var(--deep-blue);
+  letter-spacing: -0.02em;
+  line-height: 1.18;
+}
+
+h4 {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--navy);
+  line-height: 1.22;
+}
+
+p, li {
+  font-size: 25px;
+  line-height: 1.42;
+  color: var(--slate-700);
+}
+
+.lead {
+  font-size: 29px;
+  line-height: 1.4;
+  color: var(--slate-700);
+}
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  font-weight: 600;
+  background: var(--blue-soft);
+  color: var(--navy);
+  padding: 2px 9px;
+  border-radius: 7px;
+  border: 1px solid #bfdbfe;
+}
+
+.text-navy { color: var(--navy); }
+.text-blue { color: var(--electric-blue); }
+.text-purple { color: var(--purple); }
+.text-cyan { color: var(--cyan); }
+
+/* ==========================================================================
+   Cards, Panels, Icons & Pills (Strict Consistent Palette)
+   ========================================================================== */
+.card {
+  background: var(--white);
+  border: 2px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 24px 28px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.card-accent-navy { border-top: 6px solid var(--navy); }
+.card-accent-blue { border-top: 6px solid var(--electric-blue); }
+.card-accent-purple { border-top: 6px solid var(--purple); }
+.card-accent-cyan { border-top: 6px solid var(--cyan-bright); }
+
+.card-soft-blue {
+  background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
+  border: 2px solid #bfdbfe;
+}
+
+.card-soft-purple {
+  background: linear-gradient(135deg, #f5f3ff 0%, #ffffff 100%);
+  border: 2px solid #ddd6fe;
+}
+
+.card-soft-cyan {
+  background: linear-gradient(135deg, #ecfeff 0%, #ffffff 100%);
+  border: 2px solid #a5f3fc;
+}
+
+.card-dark {
+  background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 26px 30px;
+  box-shadow: var(--shadow-lg);
+}
+
+.card-header-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.icon-box {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-weight: 900;
+  font-size: 24px;
+}
+
+.icon-navy { background: #e0e7ff; color: var(--navy); border: 2px solid #c7d2fe; }
+.icon-blue { background: var(--blue-soft); color: var(--electric-blue); border: 2px solid #bfdbfe; }
+.icon-purple { background: var(--purple-soft); color: var(--purple); border: 2px solid #ddd6fe; }
+.icon-cyan { background: var(--cyan-soft); color: var(--cyan); border: 2px solid #a5f3fc; }
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.pill-navy { background: #e0e7ff; color: var(--navy); border: 1.5px solid #c7d2fe; }
+.pill-blue { background: var(--blue-soft); color: var(--electric-blue); border: 1.5px solid #bfdbfe; }
+.pill-purple { background: var(--purple-soft); color: var(--purple); border: 1.5px solid #ddd6fe; }
+.pill-cyan { background: var(--cyan-soft); color: var(--cyan); border: 1.5px solid #a5f3fc; }
+.pill-slate { background: var(--slate-100); color: var(--slate-700); border: 1.5px solid var(--slate-300); }
+
+.clean-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.clean-list li {
+  position: relative;
+  padding-left: 28px;
+}
+
+.clean-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 12px;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  background: linear-gradient(135deg, var(--electric-blue), var(--cyan-bright));
+}
+
+.clean-list.purple-bullets li::before {
+  background: linear-gradient(135deg, var(--purple), var(--electric-blue));
+}
+
+/* ==========================================================================
+   Layout Grids
+   ========================================================================== */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+.grid-60-40 { display: grid; grid-template-columns: 1.45fr 1fr; gap: 30px; }
+.grid-55-45 { display: grid; grid-template-columns: 1.18fr 1fr; gap: 28px; }
+.grid-40-60 { display: grid; grid-template-columns: 1fr 1.45fr; gap: 30px; }
+
+.flex-col { display: flex; flex-direction: column; gap: 22px; }
+.grow { flex: 1; min-height: 0; }
+
+/* ==========================================================================
+   Hero Slide & Big KPI Tiles
+   ========================================================================== */
+.slide-hero {
+  background:
+    radial-gradient(circle at 86% 18%, rgba(37, 99, 235, 0.14) 0%, transparent 42%),
+    radial-gradient(circle at 92% 84%, rgba(124, 58, 237, 0.12) 0%, transparent 38%),
+    radial-gradient(circle at 10% 88%, rgba(6, 182, 212, 0.10) 0%, transparent 36%),
+    linear-gradient(135deg, #ffffff 0%, #f8fafc 55%, #eff6ff 100%);
+}
+
+.hero-title {
+  font-size: 74px;
+  font-weight: 900;
+  line-height: 1.04;
+  letter-spacing: -0.032em;
+  color: var(--deep-blue);
+}
+
+.hero-gradient {
+  background: linear-gradient(90deg, var(--navy) 0%, var(--electric-blue) 52%, var(--purple) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.kpi-tile {
+  background: var(--white);
+  border: 2px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 20px 24px;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.kpi-label {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--slate-600);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.kpi-value {
+  font-size: 50px;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+}
+
+.kpi-sub {
+  font-size: 19px;
+  color: var(--slate-500);
+  font-weight: 500;
+}
+
+/* ==========================================================================
+   Tables (Large Projector-Friendly Text)
+   ========================================================================== */
+.data-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--white);
+  border: 2px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.data-table th {
+  background: linear-gradient(90deg, var(--navy), var(--electric-blue));
+  color: var(--white);
+  font-size: 22px;
+  font-weight: 800;
+  text-align: left;
+  padding: 15px 20px;
+}
+
+.data-table td {
+  font-size: 22px;
+  padding: 15px 20px;
+  color: var(--slate-700);
+  border-bottom: 1.5px solid var(--slate-200);
+  vertical-align: middle;
+}
+
+.data-table tr:last-child td {
+  border-bottom: none;
+}
+
+.data-table tbody tr:nth-child(even) {
+  background: var(--slate-50);
+}
+
+/* ==========================================================================
+   Diagrams & Legend
+   ========================================================================== */
+.diagram-frame {
+  background: var(--white);
+  border: 2px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.diagram-frame svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.legend-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 12px 22px;
+  background: var(--slate-50);
+  border: 2px solid var(--slate-200);
+  border-radius: var(--radius-sm);
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--slate-700);
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.legend-swatch {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  display: inline-block;
+}
+
+/* ==========================================================================
+   Code Terminal & Dashboard Screenshot Frame
+   ========================================================================== */
+.code-block {
+  background: #0f172a;
+  color: #e2e8f0;
+  font-family: var(--font-mono);
+  font-size: 23px;
+  line-height: 1.65;
+  padding: 24px 28px;
+  border-radius: var(--radius-md);
+  border: 2px solid #1e3a8a;
+  box-shadow: var(--shadow-lg);
+}
+
+.code-comment { color: #94a3b8; }
+.code-cmd { color: #67e8f9; font-weight: 700; }
+
+.screenshot-frame {
+  background: #0d111a;
+  border: 2.5px solid var(--slate-300);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow: hidden;
+}
+
+.browser-dots {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #1e293b;
+}
+
+.browser-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.browser-url {
+  margin-left: 10px;
+  font-family: var(--font-mono);
+  font-size: 17px;
+  color: #cbd5e1;
+}
+
+.screenshot-img {
+  width: 100%;
+  height: 675px;
+  object-fit: contain;
+  object-position: center;
+  background: #0d111a;
+  border-radius: 8px;
+}
+
+/* ==========================================================================
+   Floating Presentation Controls (Hidden until hover; hidden in print)
+   ========================================================================== */
+.nav-hud {
+  position: fixed;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(12px);
+  color: var(--white);
+  padding: 8px 16px;
+  border-radius: 999px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.34);
+  z-index: 100;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.nav-hud:hover,
+.nav-hud.visible {
+  opacity: 1;
+}
+
+.nav-btn {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--white);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.nav-btn:hover {
+  background: var(--electric-blue);
+  border-color: var(--sky-blue);
+}
+
+.nav-counter {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 700;
+  min-width: 76px;
+  text-align: center;
+  color: #e2e8f0;
+}
+
+/* Slide Picker Modal */
+.overview-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(10px);
+  z-index: 200;
+  display: none;
+  flex-direction: column;
+  padding: 36px 48px;
+  overflow-y: auto;
+}
+
+.overview-modal.open {
+  display: flex;
+}
+
+.overview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--white);
+  margin-bottom: 24px;
+}
+
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 18px;
+}
+
+.overview-card {
+  background: var(--white);
+  border-radius: 14px;
+  padding: 20px 22px;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.overview-card:hover {
+  border-color: var(--cyan-bright);
+}
+
+.overview-card.current {
+  border-color: var(--electric-blue);
+  background: var(--blue-soft);
+}
+
+.overview-num {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--electric-blue);
+  margin-bottom: 6px;
+}
+
+.overview-title {
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--deep-blue);
+}
+
+/* ==========================================================================
+   Exact 16:9 Landscape PDF Export
+   ========================================================================== */
+@page {
+  size: 1920px 1080px;
+  margin: 0;
+}
+
+@media print {
+  html, body {
+    width: 1920px;
+    height: auto;
+    overflow: visible;
+    background: var(--white);
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .nav-hud,
+  .overview-modal {
+    display: none !important;
+  }
+
+  .deck-viewport {
+    position: static;
+    display: block;
+    background: none;
+    overflow: visible;
+  }
+
+  .slide-stage {
+    width: 1920px;
+    height: auto;
+    transform: none !important;
+    box-shadow: none;
+    overflow: visible;
+  }
+
+  .slide {
+    position: relative;
+    display: flex !important;
+    width: 1920px;
+    height: 1080px;
+    page-break-after: always;
+    break-after: page;
+  }
+
+  .slide:last-child {
+    page-break-after: auto;
+    break-after: auto;
+  }
+}
